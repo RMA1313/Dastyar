@@ -36,7 +36,7 @@ export function TemporaryChat() {
   }
 
   return (
-    <div className="relative flex flex-wrap items-center gap-2">
+    <div className="relative flex flex-wrap items-center gap-2" dir="rtl">
       <TooltipAnchor
         description={localize(temporaryBadge.label)}
         render={
@@ -44,16 +44,19 @@ export function TemporaryChat() {
             onClick={handleBadgeToggle}
             aria-label={localize(temporaryBadge.label)}
             className={cn(
-              'inline-flex size-10 flex-shrink-0 items-center justify-center rounded-xl border border-border-light text-text-primary transition-all ease-in-out hover:bg-surface-tertiary',
+              'inline-flex size-11 flex-shrink-0 items-center justify-center rounded-[18px] border border-white/60 bg-gradient-to-br from-sky-50/85 via-white/95 to-indigo-50/80 text-slate-800 shadow-[0_16px_40px_-24px_rgba(59,130,246,0.75)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-[1px] hover:shadow-[0_22px_55px_-24px_rgba(99,102,241,0.7)] dark:border-white/10 dark:bg-slate-900/90 dark:text-white dark:shadow-black/30',
               isTemporary
-                ? 'bg-surface-active shadow-md'
-                : 'bg-transparent shadow-sm hover:bg-surface-hover hover:shadow-md',
-              'active:shadow-inner',
+                ? 'ring-2 ring-sky-300/80 ring-offset-2 ring-offset-white dark:ring-sky-500/70 dark:ring-offset-slate-900'
+                : 'hover:border-sky-200 hover:bg-white/95 dark:hover:border-sky-400/50 dark:hover:bg-slate-900/90',
+              'active:scale-[0.99]',
             )}
           >
             {temporaryBadge.icon && (
               <temporaryBadge.icon
-                className={cn('relative h-5 w-5 md:h-4 md:w-4', !temporaryBadge.label && 'mx-auto')}
+                className={cn(
+                  'relative h-5 w-5 text-sky-700 transition-colors dark:text-sky-300 md:h-4 md:w-4',
+                  !temporaryBadge.label && 'mx-auto',
+                )}
               />
             )}
           </button>

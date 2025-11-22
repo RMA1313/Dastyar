@@ -197,7 +197,7 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
   const baseClasses = useMemo(
     () =>
       cn(
-        'md:py-3.5 m-0 w-full resize-none py-[13px] placeholder-black/50 bg-transparent dark:placeholder-white/50 [&:has(textarea:focus)]:shadow-[0_2px_6px_rgba(0,0,0,.05)]',
+        'md:py-3.5 m-0 w-full resize-none py-[13px] bg-transparent text-right text-slate-900 placeholder:text-slate-500 dark:text-white dark:placeholder:text-slate-300 [&:has(textarea:focus)]:shadow-[0_2px_6px_rgba(0,0,0,.05)]',
         isCollapsed ? 'max-h-[52px]' : 'max-h-[45vh] md:max-h-[55vh]',
         isMoreThanThreeRows ? 'pl-5' : 'px-5',
       ),
@@ -208,15 +208,17 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
     <form
       onSubmit={methods.handleSubmit(submitMessage)}
       className={cn(
-        'mx-auto flex w-full flex-row gap-3 transition-[max-width] duration-300 sm:px-2',
+        'mx-auto flex w-full flex-row gap-3 px-3 pb-1 pt-1 transition-[max-width] duration-300 sm:px-4',
         maximizeChatSpace ? 'max-w-full' : 'md:max-w-3xl xl:max-w-4xl',
         centerFormOnLanding &&
           (conversationId == null || conversationId === Constants.NEW_CONVO) &&
           !isSubmitting &&
           conversation?.messages?.length === 0
-          ? 'transition-all duration-200 sm:mb-28'
-          : 'sm:mb-10',
+          ? 'transition-all duration-200 sm:mb-20'
+          : 'sm:mb-8',
       )}
+      dir="rtl"
+      style={{ fontFamily: 'Vazir, system-ui, -apple-system, sans-serif' }}
     >
       <div className="relative flex h-full flex-1 items-stretch md:flex-col">
         <div className={cn('flex w-full items-center', isRTL && 'flex-row-reverse')}>
@@ -243,11 +245,12 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
           <div
             onClick={handleContainerClick}
             className={cn(
-              'relative flex w-full flex-grow flex-col overflow-hidden rounded-t-3xl border pb-4 text-text-primary transition-all duration-200 sm:rounded-3xl sm:pb-0',
-              isTextAreaFocused ? 'shadow-lg' : 'shadow-md',
+              'relative flex w-full flex-grow flex-col overflow-hidden rounded-[28px] border border-white/60 px-5 pb-3 pt-3 text-text-primary shadow-[0_26px_90px_-52px_rgba(59,130,246,0.8)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-[1px] hover:shadow-[0_32px_110px_-60px_rgba(109,40,217,0.7)] dark:border-white/10 dark:shadow-black/35',
+              isTextAreaFocused &&
+                'ring-2 ring-sky-300/70 ring-offset-2 ring-offset-white dark:ring-sky-500/60 dark:ring-offset-slate-900',
               isTemporary
-                ? 'border-violet-800/60 bg-violet-950/10'
-                : 'border-border-light bg-surface-chat',
+                ? 'border-violet-800/60 bg-gradient-to-l from-violet-100/60 via-white/75 to-sky-50/60 dark:from-violet-900/50 dark:via-slate-900/60 dark:to-slate-800/60'
+                : 'bg-gradient-to-l from-sky-500/22 via-indigo-500/18 to-purple-600/18 dark:from-slate-900/80 dark:via-slate-950/85 dark:to-indigo-950/75',
             )}
           >
             <TextareaHeader addedConvo={addedConvo} setAddedConvo={setAddedConvo} />
@@ -301,11 +304,11 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
             )}
             <div
               className={cn(
-                '@container items-between flex gap-2 pb-2',
+                '@container items-center justify-between mt-1 flex gap-2 pb-1',
                 isRTL ? 'flex-row-reverse' : 'flex-row',
               )}
             >
-              <div className={`${isRTL ? 'mr-2' : 'ml-2'}`}>
+              <div className={cn(isRTL ? 'ml-2' : 'mr-2', 'flex items-center')}>
                 <AttachFileChat conversation={conversation} disableInputs={disableInputs} />
               </div>
               <BadgeRow
@@ -327,7 +330,7 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
                   isSubmitting={isSubmitting}
                 />
               )}
-              <div className={`${isRTL ? 'ml-2' : 'mr-2'}`}>
+              <div className={cn(isRTL ? 'mr-1' : 'ml-1', 'flex items-center')}>
                 {(isSubmitting || isSubmittingAdded) && (showStopButton || showStopAdded) ? (
                   <StopButton stop={handleStopGenerating} setShowStopButton={setShowStopButton} />
                 ) : (

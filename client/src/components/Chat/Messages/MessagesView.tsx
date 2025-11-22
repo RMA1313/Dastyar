@@ -35,8 +35,8 @@ function MessagesViewContent({
 
   return (
     <>
-      <div className="relative flex-1 overflow-hidden overflow-y-auto">
-        <div className="relative h-full">
+      <div className="relative flex-1 overflow-hidden overflow-y-auto px-2 pb-4 sm:px-3" dir="rtl">
+        <div className="relative h-full pt-1 sm:pt-2">
           <div
             className="scrollbar-gutter-stable"
             onScroll={debouncedHandleScroll}
@@ -47,7 +47,7 @@ function MessagesViewContent({
               width: '100%',
             }}
           >
-            <div className="flex flex-col pb-9 dark:bg-transparent">
+            <div className="flex flex-col gap-1 pb-8 dark:bg-transparent">
               {(_messagesTree && _messagesTree.length == 0) || _messagesTree === null ? (
                 <div
                   className={cn(

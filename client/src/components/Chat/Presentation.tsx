@@ -75,18 +75,34 @@ export default function Presentation({ children }: { children: React.ReactNode }
   }, [artifactsVisibility, artifacts]);
 
   return (
-    <DragDropWrapper className="relative flex w-full grow overflow-hidden bg-presentation">
+    <DragDropWrapper
+      dir="rtl"
+      className="relative mx-auto flex h-full w-full max-w-[1860px] items-stretch justify-end overflow-hidden rounded-[34px] border border-white/40 bg-gradient-to-br from-sky-50/70 via-white/70 to-purple-100/65 p-4 shadow-[0_30px_110px_-55px_rgba(59,130,246,0.6)] backdrop-blur-2xl transition-all duration-500 hover:-translate-y-[2px] hover:shadow-[0_34px_130px_-50px_rgba(99,102,241,0.68)] dark:border-white/10 dark:from-slate-950/75 dark:via-slate-950/70 dark:to-indigo-950/70 dark:shadow-black/50 sm:p-7"
+    >
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/70 via-sky-50/55 to-indigo-100/65 dark:from-slate-900/80 dark:via-slate-950/70 dark:to-indigo-950/70" />
+        <div className="absolute right-[-18%] top-[-8%] h-[320px] w-[320px] rounded-full bg-sky-500/18 blur-[120px] dark:bg-indigo-800/28" />
+        <div className="absolute left-[-12%] bottom-[-16%] h-[320px] w-[320px] rounded-full bg-purple-500/12 blur-[140px] dark:bg-purple-900/28" />
+        <div className="absolute left-[18%] top-[6%] h-[160px] w-[160px] rounded-full bg-white/35 blur-[90px] dark:bg-white/10" />
+      </div>
       <SidePanelProvider>
-        <SidePanelGroup
-          defaultLayout={defaultLayout}
-          fullPanelCollapse={fullCollapse}
-          defaultCollapsed={defaultCollapsed}
-          artifacts={artifactsElement}
-        >
-          <main className="flex h-full flex-col overflow-y-auto" role="main">
-            {children}
-          </main>
-        </SidePanelGroup>
+        <div className="relative z-10 flex h-full w-full max-w-[1640px] justify-end">
+          <SidePanelGroup
+            defaultLayout={defaultLayout}
+            fullPanelCollapse={fullCollapse}
+            defaultCollapsed={defaultCollapsed}
+            artifacts={artifactsElement}
+          >
+            <main
+              dir="rtl"
+              style={{ fontFamily: 'Vazir, system-ui, -apple-system, sans-serif' }}
+              className="flex h-full flex-col overflow-y-auto rounded-[30px] border border-white/50 bg-white/88 px-5 py-7 text-text-primary shadow-[0_24px_90px_-55px_rgba(59,130,246,0.75)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-[1px] hover:shadow-[0_32px_110px_-62px_rgba(99,102,241,0.8)] dark:border-white/10 dark:bg-slate-900/85 dark:text-white dark:shadow-[0_20px_55px_rgba(0,0,0,0.45)] sm:px-8 sm:py-9"
+              role="main"
+            >
+              {children}
+            </main>
+          </SidePanelGroup>
+        </div>
       </SidePanelProvider>
     </DragDropWrapper>
   );

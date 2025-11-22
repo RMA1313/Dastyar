@@ -18,6 +18,7 @@ import Header from './Header';
 import Footer from './Footer';
 import { cn } from '~/utils';
 import store from '~/store';
+import ThemeToggle from '~/components/Auth/ThemeToggle';
 
 function LoadingSpinner() {
   return (
@@ -79,7 +80,12 @@ function ChatView({ index = 0 }: { index?: number }) {
       <ChatContext.Provider value={chatHelpers}>
         <AddedChatContext.Provider value={addedChatHelpers}>
           <Presentation>
-            <div className="flex h-full w-full flex-col">
+            <div className="pointer-events-none">
+              <div className="pointer-events-auto fixed bottom-6 right-6 z-30 drop-shadow-[0_18px_55px_-24px_rgba(59,130,246,0.65)] sm:bottom-8 sm:right-8">
+                <ThemeToggle />
+              </div>
+            </div>
+            <div className="flex h-full w-full flex-col space-y-3 sm:space-y-4" dir="rtl">
               {!isLoading && <Header />}
               <>
                 <div

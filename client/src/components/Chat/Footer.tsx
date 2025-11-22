@@ -14,7 +14,7 @@ export default function Footer({ className }: { className?: string }) {
 
   const privacyPolicyRender = privacyPolicy?.externalUrl != null && (
     <a
-      className="text-text-secondary underline"
+      className="font-semibold text-sky-700 underline decoration-2 decoration-sky-400 underline-offset-4 transition-colors hover:text-indigo-700 dark:text-sky-300 dark:hover:text-indigo-200"
       href={privacyPolicy.externalUrl}
       target={privacyPolicy.openNewTab === true ? '_blank' : undefined}
       rel="noreferrer"
@@ -25,7 +25,7 @@ export default function Footer({ className }: { className?: string }) {
 
   const termsOfServiceRender = termsOfService?.externalUrl != null && (
     <a
-      className="text-text-secondary underline"
+      className="font-semibold text-sky-700 underline decoration-2 decoration-sky-400 underline-offset-4 transition-colors hover:text-indigo-700 dark:text-sky-300 dark:hover:text-indigo-200"
       href={termsOfService.externalUrl}
       target={termsOfService.openNewTab === true ? '_blank' : undefined}
       rel="noreferrer"
@@ -59,7 +59,7 @@ export default function Footer({ className }: { className?: string }) {
           a: ({ node: _n, href, children, ...otherProps }) => {
             return (
               <a
-                className="text-text-secondary underline"
+                className="font-semibold text-sky-700 underline decoration-2 decoration-sky-400 underline-offset-4 transition-colors hover:text-indigo-700 dark:text-sky-300 dark:hover:text-indigo-200"
                 href={href}
                 target="_blank"
                 rel="noreferrer"
@@ -83,28 +83,43 @@ export default function Footer({ className }: { className?: string }) {
   );
 
   return (
-    <div className="relative w-full">
+    <div
+      className="relative hidden w-full"
+      dir="rtl"
+      style={{ fontFamily: 'Vazir, system-ui, -apple-system, sans-serif' }}
+    >
       <div
         className={
           className ??
-          'absolute bottom-0 left-0 right-0 hidden items-center justify-center gap-2 px-2 py-2 text-center text-xs text-text-primary sm:flex md:px-[60px]'
+          'absolute inset-x-0 bottom-4 hidden justify-end px-4 py-2 text-center text-xs sm:flex md:px-[60px]'
         }
         role="contentinfo"
       >
-        {footerElements.map((contentRender, index) => {
-          const isLastElement = index === footerElements.length - 1;
-          return (
-            <React.Fragment key={`footer-element-${index}`}>
-              {contentRender}
-              {!isLastElement && (
-                <div
-                  key={`separator-${index}`}
-                  className="h-2 border-r-[1px] border-border-medium"
-                />
-              )}
-            </React.Fragment>
-          );
-        })}
+        <div className="relative flex min-w-[280px] max-w-5xl items-center justify-center gap-3 rounded-[22px] border border-white/60 bg-white/90 px-4 py-3 text-[13px] font-semibold text-slate-700 shadow-lg shadow-slate-200/60 backdrop-blur-xl transition-all duration-300 hover:-translate-y-[1px] hover:shadow-2xl hover:shadow-sky-200/60 dark:border-white/10 dark:bg-slate-900/85 dark:text-slate-100 dark:shadow-black/30">
+          <div
+            className="pointer-events-none absolute inset-0 rounded-[22px] bg-gradient-to-l from-sky-50/80 via-white/60 to-indigo-100/70 opacity-90 dark:from-slate-800/55 dark:via-slate-900/45 dark:to-slate-800/55"
+            aria-hidden="true"
+          />
+          <div className="relative flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+            {footerElements.map((contentRender, index) => {
+              const isLastElement = index === footerElements.length - 1;
+              return (
+                <React.Fragment key={`footer-element-${index}`}>
+                  <span className="leading-tight text-slate-700 transition-colors dark:text-slate-100">
+                    {contentRender}
+                  </span>
+                  {!isLastElement && (
+                    <span
+                      key={`separator-${index}`}
+                      className="mx-1 h-6 w-[1px] bg-gradient-to-b from-sky-300 via-indigo-300 to-sky-400 opacity-80 dark:from-sky-500 dark:via-indigo-400 dark:to-sky-500"
+                      aria-hidden="true"
+                    />
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );

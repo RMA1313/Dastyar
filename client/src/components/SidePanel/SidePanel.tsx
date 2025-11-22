@@ -149,6 +149,7 @@ const SidePanel = ({
         tagName="nav"
         id="controls-nav"
         order={hasArtifacts ? 3 : 2}
+        dir="rtl"
         aria-label={localize('com_ui_controls')}
         role="navigation"
         collapsedSize={collapsedSize}
@@ -173,7 +174,7 @@ const SidePanel = ({
           localStorage.setItem('react-resizable-panels:collapsed', 'true');
         }}
         className={cn(
-          'sidenav hide-scrollbar border-l border-border-light bg-background py-1 transition-opacity',
+          'sidenav hide-scrollbar rounded-l-[26px] border-l border-white/35 bg-white/88 py-2 shadow-[0_24px_80px_-55px_rgba(59,130,246,0.65)] backdrop-blur-2xl transition-opacity dark:border-white/10 dark:bg-slate-900/88 dark:shadow-black/40',
           isCollapsed ? 'min-w-[50px]' : 'min-w-[340px] sm:min-w-[352px]',
           (isSmallScreen && isCollapsed && (minSize === 0 || collapsedSize === 0)) || fullCollapse
             ? 'hidden min-w-0'

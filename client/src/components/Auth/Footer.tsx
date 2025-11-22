@@ -1,8 +1,6 @@
 import { TStartupConfig } from 'librechat-data-provider';
 
-const BaleIcon = () => (
-  <img src="/assets/bale.png" alt="بله" className="h-8 w-8 drop-shadow-sm" />
-);
+const BaleIcon = () => (<img src="/assets/bale.png" alt="بله" className="h-8 w-8 drop-shadow-sm" />);
 
 const WebsiteIcon = () => (
   <img src="/assets/pardis-logo.png" alt="وب‌سایت" className="h-8 w-8 drop-shadow-sm" />
@@ -15,7 +13,7 @@ function Footer({ startupConfig }: { startupConfig: TStartupConfig | null | unde
   ];
 
   return (
-    <div className="mt-4 flex items-center justify-center gap-6 rounded-2xl bg-white/70 p-4 text-center shadow-sm backdrop-blur dark:bg-slate-900/70">
+    <div className="mt-4 flex items-center justify-center gap-6">
       {socials.map(({ href, label, Icon }) => (
         <a
           key={label}

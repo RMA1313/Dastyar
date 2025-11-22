@@ -81,10 +81,10 @@ export default function ExportAndShareMenu({
               <Ariakit.MenuButton
                 id="export-menu-button"
                 aria-label="Export options"
-                className="inline-flex size-10 flex-shrink-0 items-center justify-center rounded-xl border border-border-light bg-transparent text-text-primary transition-all ease-in-out hover:bg-surface-tertiary disabled:pointer-events-none disabled:opacity-50 radix-state-open:bg-surface-tertiary"
+                className="inline-flex size-11 flex-shrink-0 items-center justify-center rounded-2xl border border-white/70 bg-white/85 text-slate-800 shadow-md shadow-slate-200/60 backdrop-blur-xl transition-all duration-300 hover:-translate-y-[1px] hover:border-sky-200 hover:bg-white/95 hover:shadow-2xl hover:shadow-sky-200/60 disabled:pointer-events-none disabled:opacity-50 dark:border-white/10 dark:bg-slate-900/85 dark:text-white dark:shadow-black/30 dark:hover:border-sky-400/50 dark:hover:bg-slate-900/90 radix-state-open:ring-2 radix-state-open:ring-sky-300/80 radix-state-open:ring-offset-2 radix-state-open:ring-offset-white dark:radix-state-open:ring-sky-500/70 dark:radix-state-open:ring-offset-slate-900"
               >
                 <Share2
-                  className="icon-md text-text-secondary"
+                  className="icon-md text-sky-700 transition-colors dark:text-sky-300"
                   aria-hidden="true"
                   focusable="false"
                 />

@@ -60,7 +60,7 @@ function ModelSelectorContent() {
 
   const trigger = (
     <button
-      className="my-1 flex h-10 w-full max-w-[70vw] items-center justify-center gap-2 rounded-xl border border-border-light bg-surface-secondary px-3 py-2 text-sm text-text-primary hover:bg-surface-tertiary"
+      className="my-1 flex h-10 min-w-[180px] items-center justify-between gap-2 rounded-full border border-white/40 bg-white/15 px-4 text-sm font-semibold text-white shadow-[0_18px_55px_-30px_rgba(0,0,0,0.35)] backdrop-blur-2xl transition-all duration-200 hover:border-white/60 hover:bg-white/25 dark:border-white/15 dark:bg-white/5"
       aria-label={localize('com_ui_select_model')}
     >
       {selectedIcon && React.isValidElement(selectedIcon) && (
@@ -68,7 +68,7 @@ function ModelSelectorContent() {
           {selectedIcon}
         </div>
       )}
-      <span className="flex-grow truncate text-left">{selectedDisplayValue}</span>
+      <span className="flex-grow truncate text-right">{selectedDisplayValue}</span>
     </button>
   );
 

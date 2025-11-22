@@ -36,8 +36,13 @@ export default function Header() {
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
   return (
-    <div className="sticky top-0 z-10 flex h-14 w-full items-center justify-between bg-white p-2 font-semibold text-text-primary dark:bg-gray-800">
-      <div className="hide-scrollbar flex w-full items-center justify-between gap-2 overflow-x-auto">
+    <div
+      dir="rtl"
+      style={{ fontFamily: 'Vazir, system-ui, -apple-system, sans-serif' }}
+      className="sticky top-0 z-20 flex min-h-[82px] w-full flex-row-reverse items-center justify-between gap-3 overflow-hidden rounded-[30px] border border-white/35 bg-gradient-to-l from-sky-500 via-indigo-500 to-purple-600 px-6 py-4 font-semibold text-white shadow-[0_26px_85px_-42px_rgba(59,130,246,0.65)] backdrop-blur-3xl transition-all duration-300 hover:-translate-y-[1px] hover:shadow-[0_32px_110px_-52px_rgba(109,40,217,0.6)] dark:border-white/10 dark:from-slate-900 dark:via-indigo-900 dark:to-purple-800 dark:text-white/90 dark:shadow-black/40 sm:px-8 sm:py-5"
+    >
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/18 via-white/10 to-transparent opacity-75 dark:from-white/10 dark:via-white/0" />
+      <div className="hide-scrollbar flex w-full flex-row-reverse items-center justify-between gap-2 overflow-x-auto">
         <div className="mx-1 flex items-center gap-2">
           <div
             className={`flex items-center gap-2 ${
