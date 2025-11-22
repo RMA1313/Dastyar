@@ -29,6 +29,15 @@ export const useLogoutUserMutation = (
   });
 };
 
+export const useRequestOtpMutation = (
+  options?: t.MutationOptions<{ message: string; expiresInMs?: number }, t.TRequestOtp, unknown, unknown>,
+): UseMutationResult<{ message: string; expiresInMs?: number }, unknown, t.TRequestOtp, unknown> => {
+  return useMutation([MutationKeys.requestOtp], {
+    mutationFn: (payload: t.TRequestOtp) => dataService.requestOtp(payload),
+    ...(options || {}),
+  });
+};
+
 export const useLoginUserMutation = (
   options?: t.MutationOptions<t.TLoginResponse, t.TLoginUser, unknown, unknown>,
 ): UseMutationResult<t.TLoginResponse, unknown, t.TLoginUser, unknown> => {

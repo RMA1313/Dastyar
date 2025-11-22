@@ -23,11 +23,13 @@ const {
 const { getConvoTitle, getConvo, saveConvo, deleteConvos } = require('./Conversation');
 const { getPreset, getPresets, savePreset, deletePresets } = require('./Preset');
 const { File } = require('~/db/models');
+const { ensureReferralCodesSeeded } = require('~/server/services/ReferralCodeService');
 
 const seedDatabase = async () => {
   await methods.initializeRoles();
   await methods.seedDefaultRoles();
   await methods.ensureDefaultCategories();
+  await ensureReferralCodesSeeded();
 };
 
 module.exports = {

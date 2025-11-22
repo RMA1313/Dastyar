@@ -76,9 +76,9 @@ function AuthLayout({
         <div className="flex items-center gap-3">
           <BlinkAnimation active={isFetching}>
             <img
-              src="/assets/logo3.gif"
+              src="/assets/logo5.gif"
               className="h-14 w-14 object-contain logo-float animate-float-y"
-              alt="U,U^U_U^"
+              alt="لوگو"
               loading="lazy"
             />
           </BlinkAnimation>

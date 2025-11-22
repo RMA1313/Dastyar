@@ -130,11 +130,10 @@ export const models = () => `${BASE_URL}/api/models`;
 
 export const tokenizer = () => `${BASE_URL}/api/tokenizer`;
 
-export const login = () => `${BASE_URL}/api/auth/login`;
+export const requestOtp = () => `${BASE_URL}/api/auth/otp/request`;
+export const login = () => `${BASE_URL}/api/auth/otp/verify`;
 
 export const logout = () => `${BASE_URL}/api/auth/logout`;
-
-export const register = () => `${BASE_URL}/api/auth/register`;
 
 export const loginFacebook = () => `${BASE_URL}/api/auth/facebook`;
 
@@ -142,14 +141,6 @@ export const loginGoogle = () => `${BASE_URL}/api/auth/google`;
 
 export const refreshToken = (retry?: boolean) =>
   `${BASE_URL}/api/auth/refresh${retry === true ? '?retry=true' : ''}`;
-
-export const requestPasswordReset = () => `${BASE_URL}/api/auth/requestPasswordReset`;
-
-export const resetPassword = () => `${BASE_URL}/api/auth/resetPassword`;
-
-export const verifyEmail = () => `${BASE_URL}/api/user/verify`;
-
-export const resendVerificationEmail = () => `${BASE_URL}/api/user/verify/resend`;
 
 export const plugins = () => `${BASE_URL}/api/plugins`;
 

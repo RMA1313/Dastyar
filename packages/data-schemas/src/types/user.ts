@@ -4,9 +4,16 @@ import { CursorPaginationParams } from '~/common';
 export interface IUser extends Document {
   name?: string;
   username?: string;
-  email: string;
-  emailVerified: boolean;
+  email?: string;
+  emailVerified?: boolean;
   password?: string;
+  phone?: string;
+  phoneVerified?: boolean;
+  otp?: string;
+  otpExpires?: Date;
+  referralCode?: string;
+  referralCodeUsed?: string | null;
+  referredBy?: Types.ObjectId | string | null;
   avatar?: string;
   provider: string;
   role?: string;
@@ -49,14 +56,14 @@ export interface BalanceConfig {
   refillAmount?: number;
 }
 
-export interface CreateUserRequest extends Partial<IUser> {
-  email: string;
-}
+export interface CreateUserRequest extends Partial<IUser> {}
 
 export interface UpdateUserRequest {
   name?: string;
   username?: string;
   email?: string;
+  phone?: string;
+  phoneVerified?: boolean;
   role?: string;
   emailVerified?: boolean;
   avatar?: string;
@@ -66,6 +73,14 @@ export interface UpdateUserRequest {
   personalization?: {
     memories?: boolean;
   };
+  dailyTokenLimit?: number;
+  dailyTokenUsed?: number;
+  tokenUsageResetAt?: Date | null;
+  restrictedUntil?: Date | null;
+  revoked?: boolean;
+  referralCode?: string;
+  referredBy?: string | Types.ObjectId | null;
+  referralCodeUsed?: string | null;
 }
 
 export interface UserDeleteResult {
@@ -81,6 +96,7 @@ export interface UserFilterOptions extends CursorPaginationParams {
   emailVerified?: boolean;
   provider?: string;
   twoFactorEnabled?: boolean;
+  phone?: string;
   // External IDs
   googleId?: string;
   facebookId?: string;

@@ -69,6 +69,7 @@ export enum MutationKeys {
   fileDelete = 'fileDelete',
   updatePreset = 'updatePreset',
   deletePreset = 'deletePreset',
+  requestOtp = 'requestOtp',
   loginUser = 'loginUser',
   logoutUser = 'logoutUser',
   refreshToken = 'refreshToken',

@@ -635,6 +635,8 @@ export type TStartupConfig = {
     username?: boolean;
   };
   serverDomain: string;
+  phoneLoginEnabled: boolean;
+  otpLoginEnabled?: boolean;
   emailLoginEnabled: boolean;
   registrationEnabled: boolean;
   socialLoginEnabled: boolean;

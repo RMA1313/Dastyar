@@ -585,8 +585,8 @@ export type TLoginLayoutContext = {
   isFetching: boolean;
   error: string | null;
   setError: React.Dispatch<React.SetStateAction<string | null>>;
-  headerText: string;
-  setHeaderText: React.Dispatch<React.SetStateAction<string>>;
+  headerText: string | null;
+  setHeaderText: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 export type NewConversationParams = {

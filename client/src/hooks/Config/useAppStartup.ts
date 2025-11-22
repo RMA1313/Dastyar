@@ -6,6 +6,7 @@ import { useAvailablePluginsQuery } from 'librechat-data-provider/react-query';
 import type { TStartupConfig, TPlugin, TUser } from 'librechat-data-provider';
 import { mapPlugins, selectPlugins, processPlugins } from '~/utils';
 import { cleanupTimestampedStorage } from '~/utils/timestamps';
+import { ensureStorageVersion, safeJSON, safeStorage } from '~/utils/safeStorage';
 import useSpeechSettingsInit from './useSpeechSettingsInit';
 import { useMCPToolsQuery } from '~/data-provider';
 import store from '~/store';
@@ -42,6 +43,7 @@ export default function useAppStartup({
 
   /** Clean up old localStorage entries on startup */
   useEffect(() => {
+    ensureStorageVersion();
     cleanupTimestampedStorage();
   }, []);
 
@@ -52,7 +54,7 @@ export default function useAppStartup({
       return;
     }
     document.title = appTitle;
-    localStorage.setItem(LocalStorageKeys.APP_TITLE, appTitle);
+    safeStorage.setItem(LocalStorageKeys.APP_TITLE, appTitle);
   }, [startupConfig]);
 
   /** Set the default spec's preset as default */
@@ -102,17 +104,20 @@ export default function useAppStartup({
       .filter((el: TPlugin | undefined): el is TPlugin => el !== undefined);
 
     /* Filter Last Selected Tools */
-    const localStorageItem = localStorage.getItem(LocalStorageKeys.LAST_TOOLS) ?? '';
+    const localStorageItem = safeStorage.getItem(LocalStorageKeys.LAST_TOOLS) ?? '';
     if (!localStorageItem) {
       return setAvailableTools({ pluginStore, ...mapPlugins(tools) });
     }
-    const lastSelectedTools = processPlugins(JSON.parse(localStorageItem) ?? [], allPlugins.map);
+    const lastSelectedTools = processPlugins(
+      safeJSON.get<string[]>(LocalStorageKeys.LAST_TOOLS, []),
+      allPlugins.map,
+    );
     const filteredTools = lastSelectedTools
       .filter((tool: TPlugin) =>
         tools.some((existingTool) => existingTool.pluginKey === tool.pluginKey),
       )
       .filter((tool: TPlugin | undefined) => !!tool);
-    localStorage.setItem(LocalStorageKeys.LAST_TOOLS, JSON.stringify(filteredTools));
+    safeJSON.set(LocalStorageKeys.LAST_TOOLS, filteredTools);
 
     setAvailableTools({ pluginStore, ...mapPlugins(tools) });
   }, [allPlugins, user, setAvailableTools]);

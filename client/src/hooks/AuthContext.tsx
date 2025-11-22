@@ -86,12 +86,11 @@ const AuthContextProvider = ({
         return;
       }
       setError(undefined);
-      setUserContext({ token, isAuthenticated: true, user, redirect: '/c/new' });
+      setUserContext({ token, isAuthenticated: true, user, redirect: '/chat' });
     },
     onError: (error: TResError | unknown) => {
       const resError = error as TResError;
       doSetError(resError.message);
-      navigate('/login', { replace: true });
     },
   });
   const logoutUser = useLogoutUserMutation({
@@ -235,4 +234,6 @@ const useAuthContext = () => {
   return context;
 };
 
-export { AuthContextProvider, useAuthContext, AuthContext };
+const useOptionalAuthContext = () => useContext(AuthContext) ?? null;
+
+export { AuthContextProvider, useAuthContext, useOptionalAuthContext, AuthContext };

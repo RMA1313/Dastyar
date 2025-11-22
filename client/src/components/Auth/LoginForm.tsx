@@ -1,187 +1,184 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { ThemeContext, Spinner, Button, isDark } from '@librechat/client';
-import type { TLoginUser, TStartupConfig } from 'librechat-data-provider';
-import type { TAuthContext } from '~/common';
-import { useResendVerificationEmail, useGetStartupConfig } from '~/data-provider';
-import { useLocalize } from '~/hooks';
+import type { TStartupConfig } from 'librechat-data-provider';
+import type { TAuthContext, TResError } from '~/common';
+import { useRequestOtpMutation } from '~/data-provider';
+import { logOtpEvent, logUiError } from '~/utils/clientLog';
+
+type LoginFormInputs = {
+  phone: string;
+};
 
 type TLoginFormProps = {
-  onSubmit: (data: TLoginUser) => void;
   startupConfig: TStartupConfig;
-  error: Pick<TAuthContext, 'error'>['error'];
+  error?: Pick<TAuthContext, 'error'>['error'];
   setError: Pick<TAuthContext, 'setError'>['setError'];
 };
 
-const LoginForm: React.FC<TLoginFormProps> = ({ onSubmit, startupConfig, error, setError }) => {
-  const localize = useLocalize();
+const OTP_TTL_MS = 120000;
+const normalizePhone = (value = '') => value.replace(/\D/g, '');
+
+const LoginForm: React.FC<TLoginFormProps> = ({ startupConfig, error, setError }) => {
+  const navigate = useNavigate();
   const { theme } = useContext(ThemeContext);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const {
     register,
-    getValues,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
-  } = useForm<TLoginUser>();
-  const [showResendLink, setShowResendLink] = useState<boolean>(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  } = useForm<LoginFormInputs>({
+    defaultValues: { phone: '' },
+  });
+  const phoneValue = watch('phone');
 
-  const { data: config } = useGetStartupConfig();
-  const useUsernameLogin = config?.ldap?.username;
   const validTheme = isDark(theme) ? 'dark' : 'light';
   const requireCaptcha = Boolean(startupConfig.turnstile?.siteKey);
 
   useEffect(() => {
-    if (error && error.includes('422') && !showResendLink) {
-      setShowResendLink(true);
+    if (error) {
+      setTurnstileToken(null);
     }
-  }, [error, showResendLink]);
+  }, [error]);
 
-  const resendLinkMutation = useResendVerificationEmail({
-    onMutate: () => {
+  const requestOtp = useRequestOtpMutation({
+    onSuccess: (data, variables) => {
+      const expiresAt = Date.now() + (data?.expiresInMs ?? OTP_TTL_MS);
+      logOtpEvent('otp-request-success', {
+        flow: 'login',
+        phone: normalizePhone(variables.phone),
+        expiresAt,
+      });
+      navigate('/otp', {
+        replace: false,
+        state: {
+          phone: normalizePhone(variables.phone),
+          flow: 'login',
+          expiresAt,
+        },
+      });
       setError(undefined);
-      setShowResendLink(false);
+    },
+    onError: (err, variables) => {
+      const resError = err as TResError;
+      const message =
+        resError?.response?.data?.message || resError?.message || 'ارسال کد تایید انجام نشد';
+      logUiError('otp-request-error', {
+        flow: 'login',
+        status: resError?.response?.status,
+        message,
+      });
+      if (
+        resError?.response?.status === 404 &&
+        (resError as { response?: { data?: { redirect?: string } } })?.response?.data?.redirect ===
+          'register'
+      ) {
+        navigate('/register', {
+          state: { phone: variables?.phone ? normalizePhone(variables.phone) : undefined },
+          replace: true,
+        });
+        return;
+      }
+      setError(message);
     },
   });
 
-  if (!startupConfig) {
-    return null;
-  }
-
-  const renderError = (fieldName: string) => {
+  const renderError = (fieldName: keyof LoginFormInputs) => {
     const errorMessage = errors[fieldName]?.message;
     return errorMessage ? (
-      <span role="alert" className="mt-1 text-sm text-red-500 dark:text-red-900">
+      <span role="alert" className="mt-1 block text-sm text-red-500 dark:text-red-300">
         {String(errorMessage)}
       </span>
     ) : null;
   };
 
-  const handleResendEmail = () => {
-    const email = getValues('email');
-    if (!email) {
-      return setShowResendLink(false);
+  const onSubmit = (values: LoginFormInputs) => {
+    const normalizedPhone = normalizePhone(values.phone);
+    if (requireCaptcha && !turnstileToken) {
+      logUiError('captcha-missing', { flow: 'login' });
+      return setError('برای ادامه، تصویر امنیتی را تکمیل کنید.');
     }
-    resendLinkMutation.mutate({ email });
+    setError(undefined);
+    logOtpEvent('otp-request-start', { flow: 'login', phone: normalizedPhone });
+    requestOtp.mutate({ phone: normalizedPhone, flow: 'login' });
   };
 
+  if (!startupConfig) {
+    return null;
+  }
+
   return (
-    <>
-      {showResendLink && (
-        <div className="mt-2 rounded-md border border-green-500 bg-green-500/10 px-3 py-2 text-sm text-gray-600 dark:text-gray-200">
-          {localize('com_auth_email_verification_resend_prompt')}
-          <button
-            type="button"
-            className="ml-2 text-blue-600 hover:underline"
-            onClick={handleResendEmail}
-            disabled={resendLinkMutation.isLoading}
-          >
-            {localize('com_auth_email_resend_link')}
-          </button>
+    <form
+      className="mt-6 space-y-7 animate-auth-card text-center"
+      aria-label="فرم ورود"
+      method="POST"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <div>
+        <label
+          htmlFor="phone"
+          className="mb-3 block text-sm font-semibold text-slate-700 dark:text-slate-100"
+        >
+          شماره تلفن همراه
+        </label>
+        <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_20px_60px_-32px_rgba(0,40,190,0.45)] backdrop-blur transition-all duration-300 focus-within:-translate-y-[1px] focus-within:border-sky-400 focus-within:shadow-[0_25px_80px_-40px_rgba(0,140,196,0.65)] focus-within:ring-2 focus-within:ring-sky-300/60 dark:border-white/10 dark:bg-slate-900/70 dark:shadow-black/25">
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-sky-50/50 via-transparent to-indigo-50/50 opacity-70 dark:from-slate-800/50 dark:to-slate-900/40" />
+          <input
+            type="tel"
+            id="phone"
+            autoComplete="tel"
+            dir="ltr"
+            inputMode="tel"
+            aria-label="شماره تلفن"
+            {...register('phone', {
+              required: 'وارد کردن شماره تلفن همراه الزامی است.',
+              pattern: {
+                value: /^\d{11}$/,
+                message: 'شماره باید ۱۱ رقم و با ۰۹ شروع شود.',
+              },
+            })}
+            aria-invalid={!!errors.phone}
+            className="webkit-dark-styles relative block w-full rounded-2xl bg-transparent px-4 py-3 text-base text-slate-900 outline-none placeholder:text-slate-400 transition-all duration-300 dark:text-white"
+            style={{ textAlign: phoneValue ? 'left' : 'right' }}
+            placeholder="مثال: ۰۹۱۲۳۴۵۶۷۸۹"
+          />
+        </div>
+        {renderError('phone')}
+        <p className="mt-2 text-xs text-slate-500 dark:text-slate-300">
+          لطفا شماره موبایل خود را دقیق و بدون فاصله وارد کنید تا کد تایید برای شما ارسال شود. اطلاعات
+          شما محرمانه باقی می‌ماند.
+        </p>
+      </div>
+
+      {requireCaptcha && (
+        <div className="flex w-full justify-center rounded-2xl border border-slate-200 bg-white/80 p-3 shadow-sm backdrop-blur transition-all duration-300 hover:shadow-md dark:border-white/10 dark:bg-slate-900/70">
+          <Turnstile
+            siteKey={startupConfig.turnstile!.siteKey}
+            options={{
+              ...startupConfig.turnstile!.options,
+              theme: validTheme,
+            }}
+            onSuccess={setTurnstileToken}
+            onError={() => setTurnstileToken(null)}
+            onExpire={() => setTurnstileToken(null)}
+          />
         </div>
       )}
-      <form
-        className="mt-6"
-        aria-label="Login form"
-        method="POST"
-        onSubmit={handleSubmit((data) => onSubmit(data))}
+
+      <Button
+        aria-label="دریافت کد تایید"
+        data-testid="login-button"
+        type="submit"
+        disabled={(requireCaptcha && !turnstileToken) || requestOtp.isLoading || isSubmitting}
+        variant="submit"
+        className="h-12 w-full rounded-2xl bg-gradient-to-l from-sky-500 via-indigo-600 to-sky-400 text-white shadow-lg shadow-sky-200/50 transition-all duration-300 hover:-translate-y-[2px] hover:shadow-2xl hover:shadow-sky-200/70 active:scale-[0.99] disabled:opacity-70"
       >
-        <div className="mb-4">
-          <div className="relative">
-            <input
-              type="text"
-              id="email"
-              autoComplete={useUsernameLogin ? 'username' : 'email'}
-              aria-label={localize('com_auth_email')}
-              {...register('email', {
-                required: localize('com_auth_email_required'),
-                maxLength: { value: 120, message: localize('com_auth_email_max_length') },
-                pattern: {
-                  value: useUsernameLogin ? /\S+/ : /\S+@\S+\.\S+/,
-                  message: localize('com_auth_email_pattern'),
-                },
-              })}
-              aria-invalid={!!errors.email}
-              className="webkit-dark-styles transition-color peer w-full rounded-2xl border border-border-light bg-surface-primary px-3.5 pb-2.5 pt-3 text-text-primary duration-200 focus:border-green-500 focus:outline-none"
-              placeholder=" "
-            />
-            <label
-              htmlFor="email"
-              className="absolute start-3 top-1.5 z-10 origin-[0] -translate-y-4 scale-75 transform bg-surface-primary px-2 text-sm text-text-secondary-alt duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-1.5 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-green-600 dark:peer-focus:text-green-500 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"
-            >
-              {useUsernameLogin
-                ? localize('com_auth_username').replace(/ \(.*$/, '')
-                : localize('com_auth_email_address')}
-            </label>
-          </div>
-          {renderError('email')}
-        </div>
-        <div className="mb-2">
-          <div className="relative">
-            <input
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              aria-label={localize('com_auth_password')}
-              {...register('password', {
-                required: localize('com_auth_password_required'),
-                minLength: {
-                  value: startupConfig?.minPasswordLength || 8,
-                  message: localize('com_auth_password_min_length'),
-                },
-                maxLength: { value: 128, message: localize('com_auth_password_max_length') },
-              })}
-              aria-invalid={!!errors.password}
-              className="webkit-dark-styles transition-color peer w-full rounded-2xl border border-border-light bg-surface-primary px-3.5 pb-2.5 pt-3 text-text-primary duration-200 focus:border-green-500 focus:outline-none"
-              placeholder=" "
-            />
-            <label
-              htmlFor="password"
-              className="absolute start-3 top-1.5 z-10 origin-[0] -translate-y-4 scale-75 transform bg-surface-primary px-2 text-sm text-text-secondary-alt duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-1.5 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-green-600 dark:peer-focus:text-green-500 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"
-            >
-              {localize('com_auth_password')}
-            </label>
-          </div>
-          {renderError('password')}
-        </div>
-        {startupConfig.passwordResetEnabled && (
-          <a
-            href="/forgot-password"
-            className="inline-flex p-1 text-sm font-medium text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
-          >
-            {localize('com_auth_password_forgot')}
-          </a>
-        )}
-
-        {requireCaptcha && (
-          <div className="my-4 flex justify-center">
-            <Turnstile
-              siteKey={startupConfig.turnstile!.siteKey}
-              options={{
-                ...startupConfig.turnstile!.options,
-                theme: validTheme,
-              }}
-              onSuccess={setTurnstileToken}
-              onError={() => setTurnstileToken(null)}
-              onExpire={() => setTurnstileToken(null)}
-            />
-          </div>
-        )}
-
-        <div className="mt-6">
-          <Button
-            aria-label={localize('com_auth_continue')}
-            data-testid="login-button"
-            type="submit"
-            disabled={(requireCaptcha && !turnstileToken) || isSubmitting}
-            variant="submit"
-            className="h-12 w-full rounded-2xl"
-          >
-            {isSubmitting ? <Spinner /> : localize('com_auth_continue')}
-          </Button>
-        </div>
-      </form>
-    </>
+        {requestOtp.isLoading || isSubmitting ? <Spinner /> : 'دریافت کد تایید'}
+      </Button>
+    </form>
   );
 };
 

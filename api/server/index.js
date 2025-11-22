@@ -133,6 +133,8 @@ const startServer = async () => {
   app.use('/api/plugins', routes.plugins);
   app.use('/api/config', routes.config);
   app.use('/api/assistants', routes.assistants);
+  app.use('/api/referrals', routes.referrals);
+  app.use('/api/support', routes.support);
   app.use('/api/files', await routes.files.initialize());
   app.use('/images/', createValidateImageRequest(appConfig.secureImageLinks), routes.staticRoute);
   app.use('/api/share', routes.share);

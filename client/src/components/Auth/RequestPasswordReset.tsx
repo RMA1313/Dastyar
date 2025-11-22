@@ -6,12 +6,11 @@ import { useRequestPasswordResetMutation } from 'librechat-data-provider/react-q
 import type { TRequestPasswordReset, TRequestPasswordResetResponse } from 'librechat-data-provider';
 import type { TLoginLayoutContext } from '~/common';
 import type { FC } from 'react';
-import { useLocalize } from '~/hooks';
 
 const BodyTextWrapper: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <div
-      className="relative mt-6 rounded-xl border border-green-500/20 bg-green-50/50 px-6 py-4 text-green-700 shadow-sm transition-all dark:bg-green-950/30 dark:text-green-100"
+      className="relative mt-6 rounded-xl border border-green-500/20 bg-green-50/50 px-6 py-4 text-center text-green-700 shadow-sm transition-all dark:bg-green-950/30 dark:text-green-100"
       role="alert"
     >
       {children}
@@ -20,22 +19,20 @@ const BodyTextWrapper: FC<{ children: ReactNode }> = ({ children }) => {
 };
 
 const ResetPasswordBodyText = () => {
-  const localize = useLocalize();
   return (
     <div className="flex flex-col space-y-4">
-      <p>{localize('com_auth_reset_password_if_email_exists')}</p>
+      <p>اگر ایمیل ثبت شده‌ای وجود داشته باشد، لینک بازیابی برای شما ارسال می‌شود.</p>
       <a
         className="inline-flex text-sm font-medium text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
         href="/login"
       >
-        {localize('com_auth_back_to_login')}
+        بازگشت به ورود
       </a>
     </div>
   );
 };
 
 function RequestPasswordReset() {
-  const localize = useLocalize();
   const {
     register,
     handleSubmit,
@@ -51,23 +48,23 @@ function RequestPasswordReset() {
     requestPasswordReset.mutate(data, {
       onSuccess: (data: TRequestPasswordResetResponse) => {
         if (data.link && !startupConfig?.emailEnabled) {
-          setHeaderText('com_auth_reset_password');
+          setHeaderText('بازنشانی گذرواژه');
           setBodyText(
             <span>
-              {localize('com_auth_click')}{' '}
+              برای ادامه{' '}
               <a className="text-green-500 hover:underline" href={data.link}>
-                {localize('com_auth_here')}
+                اینجا
               </a>{' '}
-              {localize('com_auth_to_reset_your_password')}
+              را لمس کنید.
             </span>,
           );
         } else {
-          setHeaderText('com_auth_reset_password_link_sent');
+          setHeaderText('لینک بازنشانی ارسال شد');
           setBodyText(<ResetPasswordBodyText />);
         }
       },
       onError: () => {
-        setHeaderText('com_auth_reset_password_link_sent');
+        setHeaderText('لینک بازنشانی ارسال شد');
         setBodyText(<ResetPasswordBodyText />);
       },
     });
@@ -80,30 +77,30 @@ function RequestPasswordReset() {
   return (
     <form
       className="mt-8 space-y-6"
-      aria-label="Password reset form"
+      aria-label="فرم بازیابی گذرواژه"
       method="POST"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="space-y-2">
+      <div className="space-y-2 text-center">
         <div className="relative">
           <input
             type="email"
             id="email"
             autoComplete="off"
-            aria-label={localize('com_auth_email')}
+            aria-label="ایمیل"
             {...register('email', {
-              required: localize('com_auth_email_required'),
+              required: 'ایمیل الزامی است.',
               minLength: {
                 value: 3,
-                message: localize('com_auth_email_min_length'),
+                message: 'حداقل ۳ کاراکتر وارد کنید.',
               },
               maxLength: {
                 value: 120,
-                message: localize('com_auth_email_max_length'),
+                message: 'حداکثر ۱۲۰ کاراکتر مجاز است.',
               },
               pattern: {
                 value: /\S+@\S+\.\S+/,
-                message: localize('com_auth_email_pattern'),
+                message: 'فرمت ایمیل صحیح نیست.',
               },
             })}
             aria-invalid={!!errors.email}
@@ -114,7 +111,7 @@ function RequestPasswordReset() {
             htmlFor="email"
             className="absolute -top-2 left-2 z-10 bg-white px-2 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:-top-2 peer-focus:text-sm peer-focus:text-green-600 dark:bg-gray-900 dark:text-gray-400 dark:peer-focus:text-green-500"
           >
-            {localize('com_auth_email_address')}
+            آدرس ایمیل
           </label>
         </div>
         {errors.email && (
@@ -125,19 +122,19 @@ function RequestPasswordReset() {
       </div>
       <div className="space-y-4">
         <Button
-          aria-label="Continue with password reset"
+          aria-label="ادامه بازیابی گذرواژه"
           type="submit"
           disabled={!!errors.email || isLoading}
           variant="submit"
           className="h-12 w-full rounded-2xl"
         >
-          {isLoading ? <Spinner /> : localize('com_auth_continue')}
+          {isLoading ? <Spinner /> : 'ادامه'}
         </Button>
         <a
           href="/login"
           className="block text-center text-sm font-medium text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
         >
-          {localize('com_auth_back_to_login')}
+          بازگشت به ورود
         </a>
       </div>
     </form>

@@ -98,6 +98,12 @@ export const updateTokenCount = (text: string) => {
   return request.post(endpoints.tokenizer(), { arg: text });
 };
 
+export const requestOtp = (
+  payload: t.TRequestOtp,
+): Promise<{ message: string; expiresInMs?: number }> => {
+  return request.post(endpoints.requestOtp(), payload);
+};
+
 export const login = (payload: t.TLoginUser): Promise<t.TLoginResponse> => {
   return request.post(endpoints.login(), payload);
 };
@@ -106,8 +112,8 @@ export const logout = (): Promise<m.TLogoutResponse> => {
   return request.post(endpoints.logout());
 };
 
-export const register = (payload: t.TRegisterUser) => {
-  return request.post(endpoints.register(), payload);
+export const register = (_payload: t.TRegisterUser): Promise<t.TRegisterUserResponse> => {
+  return Promise.reject(new Error('Registration is disabled.'));
 };
 
 export const userKeyQuery = (name: string): Promise<t.TCheckUserKeyResponse> =>
@@ -118,23 +124,23 @@ export const getLoginGoogle = () => {
 };
 
 export const requestPasswordReset = (
-  payload: t.TRequestPasswordReset,
+  _payload: t.TRequestPasswordReset,
 ): Promise<t.TRequestPasswordResetResponse> => {
-  return request.post(endpoints.requestPasswordReset(), payload);
+  return Promise.reject(new Error('Password reset is disabled.'));
 };
 
-export const resetPassword = (payload: t.TResetPassword) => {
-  return request.post(endpoints.resetPassword(), payload);
+export const resetPassword = (_payload: t.TResetPassword) => {
+  return Promise.reject(new Error('Password reset is disabled.'));
 };
 
-export const verifyEmail = (payload: t.TVerifyEmail): Promise<t.VerifyEmailResponse> => {
-  return request.post(endpoints.verifyEmail(), payload);
+export const verifyEmail = (_payload: t.TVerifyEmail): Promise<t.VerifyEmailResponse> => {
+  return Promise.reject(new Error('Email verification is disabled.'));
 };
 
 export const resendVerificationEmail = (
-  payload: t.TResendVerificationEmail,
+  _payload: t.TResendVerificationEmail,
 ): Promise<t.VerifyEmailResponse> => {
-  return request.post(endpoints.resendVerificationEmail(), payload);
+  return Promise.reject(new Error('Email verification is disabled.'));
 };
 
 export const getAvailablePlugins = (): Promise<s.TPlugin[]> => {

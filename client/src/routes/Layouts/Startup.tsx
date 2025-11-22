@@ -5,17 +5,17 @@ import { useGetStartupConfig } from '~/data-provider';
 import AuthLayout from '~/components/Auth/AuthLayout';
 import { TranslationKeys, useLocalize } from '~/hooks';
 
-const headerMap: Record<string, TranslationKeys> = {
-  '/login': 'com_auth_welcome_back',
-  '/register': 'com_auth_create_account',
-  '/forgot-password': 'com_auth_reset_password',
-  '/reset-password': 'com_auth_reset_password',
-  '/login/2fa': 'com_auth_verify_your_identity',
+const headerMap: Record<string, TranslationKeys | string> = {
+  '/login': ' ',
+  '/login/phone': 'ورود',
+  '/register': 'ثبت نام',
+  '/otp': 'تایید کد پیامکی',
+  '/login/2fa': 'تایید هویت دومرحله‌ای',
 };
 
 export default function StartupLayout({ isAuthenticated }: { isAuthenticated?: boolean }) {
   const [error, setError] = useState<TranslationKeys | null>(null);
-  const [headerText, setHeaderText] = useState<TranslationKeys | null>(null);
+  const [headerText, setHeaderText] = useState<TranslationKeys | string | null>(null);
   const [startupConfig, setStartupConfig] = useState<TStartupConfig | null>(null);
   const {
     data,
@@ -30,7 +30,7 @@ export default function StartupLayout({ isAuthenticated }: { isAuthenticated?: b
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/c/new', { replace: true });
+      navigate('/chat', { replace: true });
     }
     if (data) {
       setStartupConfig(data);

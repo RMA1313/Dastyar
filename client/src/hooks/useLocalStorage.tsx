@@ -6,26 +6,25 @@
  */
 
 import { useEffect, useState } from 'react';
+import { safeJSON, safeStorage } from '~/utils/safeStorage';
 
 export default function useLocalStorage<T>(key: string, defaultValue: T): [T, (value: T) => void] {
   const [value, setValue] = useState(defaultValue);
 
   useEffect(() => {
-    const item = localStorage.getItem(key);
-
+    const item = safeStorage.getItem(key);
     if (!item) {
-      localStorage.setItem(key, JSON.stringify(defaultValue));
+      safeJSON.set(key, defaultValue);
     }
 
-    setValue(item ? JSON.parse(item) : defaultValue);
+    setValue(safeJSON.get(key, defaultValue));
 
     function handler(e: StorageEvent) {
       if (e.key !== key) {
         return;
       }
 
-      const lsi = localStorage.getItem(key);
-      setValue(JSON.parse(lsi ?? ''));
+      setValue(safeJSON.get(key, defaultValue));
     }
 
     window.addEventListener('storage', handler);
@@ -40,7 +39,7 @@ export default function useLocalStorage<T>(key: string, defaultValue: T): [T, (v
     try {
       setValue(value);
 
-      localStorage.setItem(key, JSON.stringify(value));
+      safeJSON.set(key, value);
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new StorageEvent('storage', { key }));
       }

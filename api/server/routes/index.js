@@ -27,6 +27,8 @@ const edit = require('./edit');
 const keys = require('./keys');
 const user = require('./user');
 const mcp = require('./mcp');
+const referrals = require('./referrals');
+const support = require('./support');
 
 module.exports = {
   mcp,
@@ -51,11 +53,13 @@ module.exports = {
   presets,
   balance,
   messages,
+  referrals,
   memories,
   endpoints,
   tokenizer,
   assistants,
   categories,
+  support,
   staticRoute,
   accessPermissions,
 };

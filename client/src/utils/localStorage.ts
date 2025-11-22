@@ -1,21 +1,16 @@
 import { LocalStorageKeys, TConversation, isUUID } from 'librechat-data-provider';
+import { safeJSON, safeStorage } from './safeStorage';
 
 export function getLocalStorageItems() {
-  const items = {
-    lastSelectedModel: localStorage.getItem(LocalStorageKeys.LAST_MODEL) ?? '',
-    lastSelectedTools: localStorage.getItem(LocalStorageKeys.LAST_TOOLS) ?? '',
-    lastConversationSetup: localStorage.getItem(LocalStorageKeys.LAST_CONVO_SETUP + '_0') ?? '',
-  };
-
-  const lastSelectedModel = items.lastSelectedModel
-    ? (JSON.parse(items.lastSelectedModel) as Record<string, string | undefined> | null)
-    : {};
-  const lastSelectedTools = items.lastSelectedTools
-    ? (JSON.parse(items.lastSelectedTools) as string[] | null)
-    : [];
-  const lastConversationSetup = items.lastConversationSetup
-    ? (JSON.parse(items.lastConversationSetup) as Partial<TConversation> | null)
-    : {};
+  const lastSelectedModel = safeJSON.get<Record<string, string | undefined> | null>(
+    LocalStorageKeys.LAST_MODEL,
+    {},
+  );
+  const lastSelectedTools = safeJSON.get<string[] | null>(LocalStorageKeys.LAST_TOOLS, []);
+  const lastConversationSetup = safeJSON.get<Partial<TConversation> | null>(
+    `${LocalStorageKeys.LAST_CONVO_SETUP}_0`,
+    {},
+  );
 
   return {
     lastSelectedModel,
@@ -25,25 +20,29 @@ export function getLocalStorageItems() {
 }
 
 export function clearLocalStorage(skipFirst?: boolean) {
-  const keys = Object.keys(localStorage);
-  keys.forEach((key) => {
-    if (skipFirst === true && key.endsWith('0')) {
-      return;
-    }
-    if (
-      key.startsWith(LocalStorageKeys.LAST_MCP_) ||
-      key.startsWith(LocalStorageKeys.LAST_CODE_TOGGLE_) ||
-      key.startsWith(LocalStorageKeys.ASST_ID_PREFIX) ||
-      key.startsWith(LocalStorageKeys.AGENT_ID_PREFIX) ||
-      key.startsWith(LocalStorageKeys.LAST_CONVO_SETUP) ||
-      key === LocalStorageKeys.LAST_SPEC ||
-      key === LocalStorageKeys.LAST_TOOLS ||
-      key === LocalStorageKeys.LAST_MODEL ||
-      key === LocalStorageKeys.FILES_TO_DELETE
-    ) {
-      localStorage.removeItem(key);
-    }
-  });
+  try {
+    const keys = Object.keys(localStorage);
+    keys.forEach((key) => {
+      if (skipFirst === true && key.endsWith('0')) {
+        return;
+      }
+      if (
+        key.startsWith(LocalStorageKeys.LAST_MCP_) ||
+        key.startsWith(LocalStorageKeys.LAST_CODE_TOGGLE_) ||
+        key.startsWith(LocalStorageKeys.ASST_ID_PREFIX) ||
+        key.startsWith(LocalStorageKeys.AGENT_ID_PREFIX) ||
+        key.startsWith(LocalStorageKeys.LAST_CONVO_SETUP) ||
+        key === LocalStorageKeys.LAST_SPEC ||
+        key === LocalStorageKeys.LAST_TOOLS ||
+        key === LocalStorageKeys.LAST_MODEL ||
+        key === LocalStorageKeys.FILES_TO_DELETE
+      ) {
+        safeStorage.removeItem(key);
+      }
+    });
+  } catch (error) {
+    console.warn('[storage] clearLocalStorage failed', error);
+  }
 }
 
 export function clearConversationStorage(conversationId?: string | null) {
@@ -56,25 +55,33 @@ export function clearConversationStorage(conversationId?: string | null) {
     );
     return;
   }
-  const keys = Object.keys(localStorage);
-  keys.forEach((key) => {
-    if (key.includes(conversationId)) {
-      localStorage.removeItem(key);
-    }
-  });
+  try {
+    const keys = Object.keys(localStorage);
+    keys.forEach((key) => {
+      if (key.includes(conversationId)) {
+        safeStorage.removeItem(key);
+      }
+    });
+  } catch (error) {
+    console.warn('[storage] clearConversationStorage failed', error);
+  }
 }
 export function clearAllConversationStorage() {
-  const keys = Object.keys(localStorage);
-  keys.forEach((key) => {
-    if (
-      key.startsWith(LocalStorageKeys.LAST_MCP_) ||
-      key.startsWith(LocalStorageKeys.LAST_CODE_TOGGLE_) ||
-      key.startsWith(LocalStorageKeys.TEXT_DRAFT) ||
-      key.startsWith(LocalStorageKeys.ASST_ID_PREFIX) ||
-      key.startsWith(LocalStorageKeys.AGENT_ID_PREFIX) ||
-      key.startsWith(LocalStorageKeys.LAST_CONVO_SETUP)
-    ) {
-      localStorage.removeItem(key);
-    }
-  });
+  try {
+    const keys = Object.keys(localStorage);
+    keys.forEach((key) => {
+      if (
+        key.startsWith(LocalStorageKeys.LAST_MCP_) ||
+        key.startsWith(LocalStorageKeys.LAST_CODE_TOGGLE_) ||
+        key.startsWith(LocalStorageKeys.TEXT_DRAFT) ||
+        key.startsWith(LocalStorageKeys.ASST_ID_PREFIX) ||
+        key.startsWith(LocalStorageKeys.AGENT_ID_PREFIX) ||
+        key.startsWith(LocalStorageKeys.LAST_CONVO_SETUP)
+      ) {
+        safeStorage.removeItem(key);
+      }
+    });
+  } catch (error) {
+    console.warn('[storage] clearAllConversationStorage failed', error);
+  }
 }

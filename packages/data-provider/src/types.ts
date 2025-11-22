@@ -192,11 +192,16 @@ export type TBackupCode = {
 export type TUser = {
   id: string;
   username: string;
-  email: string;
-  name: string;
-  avatar: string;
+  phone: string;
+  phoneVerified?: boolean;
+  email?: string;
+  name?: string;
+  avatar?: string;
   role: string;
   provider: string;
+  referralCode?: string;
+  referredBy?: string | null;
+  referralCodeUsed?: string | null;
   plugins?: string[];
   twoFactorEnabled?: boolean;
   backupCodes?: TBackupCode[];
@@ -380,11 +385,17 @@ export type TRegisterUser = {
   token?: string;
 };
 
+export type TRequestOtp = {
+  phone: string;
+  flow?: 'login' | 'register';
+  referralCode?: string;
+};
+
 export type TLoginUser = {
-  email: string;
-  password: string;
-  token?: string;
-  backupCode?: string;
+  phone: string;
+  otp: string;
+  flow?: 'login' | 'register';
+  referralCode?: string;
 };
 
 export type TLoginResponse = {

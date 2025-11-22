@@ -35,15 +35,14 @@ const userSchema = new Schema<IUser>(
     },
     email: {
       type: String,
-      required: [true, "can't be blank"],
       lowercase: true,
       unique: true,
+      sparse: true,
       match: [/\S+@\S+\.\S+/, 'is invalid'],
       index: true,
     },
     emailVerified: {
       type: Boolean,
-      required: true,
       default: false,
     },
     password: {
@@ -53,6 +52,24 @@ const userSchema = new Schema<IUser>(
       maxlength: 128,
       select: false,
     },
+    phone: {
+      type: String,
+      required: false,
+      unique: true,
+      trim: true,
+      sparse: true,
+    },
+    phoneVerified: {
+      type: Boolean,
+      default: false,
+    },
+    otp: {
+      type: String,
+      select: false,
+    },
+    otpExpires: {
+      type: Date,
+    },
     avatar: {
       type: String,
       required: false,
@@ -60,7 +77,7 @@ const userSchema = new Schema<IUser>(
     provider: {
       type: String,
       required: true,
-      default: 'local',
+      default: 'phone',
     },
     role: {
       type: String,
@@ -140,6 +157,41 @@ const userSchema = new Schema<IUser>(
         },
       },
       default: {},
+    },
+    dailyTokenLimit: {
+      type: Number,
+      default: 0,
+    },
+    dailyTokenUsed: {
+      type: Number,
+      default: 0,
+    },
+    tokenUsageResetAt: {
+      type: Date,
+      default: null,
+    },
+    restrictedUntil: {
+      type: Date,
+      default: null,
+    },
+    revoked: {
+      type: Boolean,
+      default: false,
+    },
+    referralCode: {
+      type: String,
+      unique: true,
+      sparse: true,
+      default: () => Math.random().toString(36).slice(2, 10).toUpperCase(),
+    },
+    referralCodeUsed: {
+      type: String,
+      default: null,
+    },
+    referredBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
     },
     /** Field for external source identification (for consistency with TPrincipal schema) */
     idOnTheSource: {

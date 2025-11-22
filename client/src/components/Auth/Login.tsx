@@ -13,7 +13,7 @@ import LoginForm from './LoginForm';
 function Login() {
   const localize = useLocalize();
   const { showToast } = useToastContext();
-  const { error, setError, login } = useAuthContext();
+  const { error, setError } = useAuthContext();
   const { startupConfig } = useOutletContext<TLoginLayoutContext>();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -88,28 +88,19 @@ function Login() {
     );
   }
 
+  const resolvedErrorKey = error ? getLoginError(error) : null;
+  const errorMessage =
+    resolvedErrorKey === 'com_auth_error_login' && error && !error.startsWith('com_')
+      ? error
+      : resolvedErrorKey
+        ? localize(resolvedErrorKey)
+        : null;
+
   return (
     <>
-      {error != null && <ErrorMessage>{localize(getLoginError(error))}</ErrorMessage>}
-      {startupConfig?.emailLoginEnabled === true && (
-        <LoginForm
-          onSubmit={login}
-          startupConfig={startupConfig}
-          error={error}
-          setError={setError}
-        />
-      )}
-      {startupConfig?.registrationEnabled === true && (
-        <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
-          {' '}
-          {localize('com_auth_no_account')}{' '}
-          <a
-            href="/register"
-            className="inline-flex p-1 text-sm font-medium text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
-          >
-            {localize('com_auth_sign_up')}
-          </a>
-        </p>
+      {errorMessage != null && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      {startupConfig?.phoneLoginEnabled === true && (
+        <LoginForm startupConfig={startupConfig} error={error} setError={setError} />
       )}
     </>
   );

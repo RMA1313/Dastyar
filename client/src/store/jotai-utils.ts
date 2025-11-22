@@ -1,5 +1,8 @@
 import { atom } from 'jotai';
-import { atomWithStorage } from 'jotai/utils';
+import { atomWithStorage, createJSONStorage } from 'jotai/utils';
+import { createSafeStorageAdapter } from '~/utils/safeStorage';
+
+const safeStorage = createJSONStorage(() => createSafeStorageAdapter());
 
 /**
  * Create a simple atom with localStorage persistence
@@ -10,7 +13,7 @@ import { atomWithStorage } from 'jotai/utils';
  * @returns Jotai atom with localStorage persistence
  */
 export function createStorageAtom<T>(key: string, defaultValue: T) {
-  return atomWithStorage<T>(key, defaultValue, undefined, {
+  return atomWithStorage<T>(key, defaultValue, safeStorage, {
     getOnInit: true,
   });
 }

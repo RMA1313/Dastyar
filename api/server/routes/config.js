@@ -15,9 +15,9 @@ const { getLogStores } = require('~/cache');
 const { mcpServersRegistry } = require('@librechat/api');
 
 const router = express.Router();
-const emailLoginEnabled =
-  process.env.ALLOW_EMAIL_LOGIN === undefined || isEnabled(process.env.ALLOW_EMAIL_LOGIN);
-const passwordResetEnabled = isEnabled(process.env.ALLOW_PASSWORD_RESET);
+const emailLoginEnabled = false;
+const phoneLoginEnabled = true;
+const passwordResetEnabled = false;
 
 const sharedLinksEnabled =
   process.env.ALLOW_SHARED_LINKS === undefined || isEnabled(process.env.ALLOW_SHARED_LINKS);
@@ -87,8 +87,10 @@ router.get('/', async function (req, res) {
       samlLabel: process.env.SAML_BUTTON_LABEL,
       samlImageUrl: process.env.SAML_IMAGE_URL,
       serverDomain: process.env.DOMAIN_SERVER || 'http://localhost:3080',
+      phoneLoginEnabled,
+      otpLoginEnabled: true,
       emailLoginEnabled,
-      registrationEnabled: !ldap?.enabled && isEnabled(process.env.ALLOW_REGISTRATION),
+      registrationEnabled: true,
       socialLoginEnabled: isEnabled(process.env.ALLOW_SOCIAL_LOGIN),
       emailEnabled:
         (!!process.env.EMAIL_SERVICE || !!process.env.EMAIL_HOST) &&

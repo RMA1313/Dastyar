@@ -1,13 +1,5 @@
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
-import {
-  Login,
-  VerifyEmail,
-  Registration,
-  ResetPassword,
-  ApiErrorWatcher,
-  TwoFactorScreen,
-  RequestPasswordReset,
-} from '~/components/Auth';
+import { Login, ApiErrorWatcher, TwoFactorScreen, AuthWelcome, Registration, OtpVerification } from '~/components/Auth';
 import { MarketplaceProvider } from '~/components/Agents/MarketplaceContext';
 import AgentMarketplace from '~/components/Agents/Marketplace';
 import { OAuthSuccess, OAuthError } from '~/components/OAuth';
@@ -53,30 +45,6 @@ export const router = createBrowserRouter(
       ],
     },
     {
-      path: '/',
-      element: <StartupLayout />,
-      errorElement: <RouteErrorBoundary />,
-      children: [
-        {
-          path: 'register',
-          element: <Registration />,
-        },
-        {
-          path: 'forgot-password',
-          element: <RequestPasswordReset />,
-        },
-        {
-          path: 'reset-password',
-          element: <ResetPassword />,
-        },
-      ],
-    },
-    {
-      path: 'verify',
-      element: <VerifyEmail />,
-      errorElement: <RouteErrorBoundary />,
-    },
-    {
       element: <AuthLayout />,
       errorElement: <RouteErrorBoundary />,
       children: [
@@ -86,7 +54,19 @@ export const router = createBrowserRouter(
           children: [
             {
               path: 'login',
+              element: <AuthWelcome />,
+            },
+            {
+              path: 'login/phone',
               element: <Login />,
+            },
+            {
+              path: 'register',
+              element: <Registration />,
+            },
+            {
+              path: 'otp',
+              element: <OtpVerification />,
             },
             {
               path: 'login/2fa',
@@ -101,6 +81,10 @@ export const router = createBrowserRouter(
           children: [
             {
               index: true,
+              element: <Navigate to="/c/new" replace={true} />,
+            },
+            {
+              path: 'chat',
               element: <Navigate to="/c/new" replace={true} />,
             },
             {
