@@ -1,6 +1,138 @@
+/* --- Local Vazir Font (Project uses /fonts/) --- */
+@font-face {
+  font-family: "Vazir";
+  src: url("$fonts/Vazir-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Vazir";
+  src: url("$fonts/Vazir.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Vazir";
+  src: url("$fonts/Vazir-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Vazir";
+  src: url("$fonts/Vazir-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+
+@font-face {
+  font-display: swap;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 400;
+  src: url('$fonts/Inter-Regular.woff2') format('woff2');
+  size-adjust: 94%;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Inter;
+  font-style: italic;
+  font-weight: 400;
+  src: url('$fonts/Inter-Italic.woff2') format('woff2');
+  size-adjust: 94%;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 500;
+  src: url('$fonts/Inter-SemiBold.woff2') format('woff2');
+  size-adjust: 94%;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Inter;
+  font-style: italic;
+  font-weight: 500;
+  src: url('$fonts/Inter-SemiBoldItalic.woff2') format('woff2');
+  size-adjust: 94%;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  src: url('$fonts/Inter-Bold.woff2') format('woff2');
+  size-adjust: 94%;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Inter;
+  font-style: italic;
+  font-weight: 600;
+  src: url('$fonts/Inter-BoldItalic.woff2') format('woff2');
+  size-adjust: 94%;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Roboto Mono;
+  font-style: normal;
+  font-weight: 400;
+  src: url('$fonts/roboto-mono-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Roboto Mono;
+  font-style: normal;
+  font-weight: 700;
+  src: url('$fonts/roboto-mono-latin-700-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: Roboto Mono;
+  font-style: italic;
+  font-weight: 400;
+  src: url('$fonts/roboto-mono-latin-400-italic.woff2') format('woff2');
+}
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
+/* Global typography */
+html,
+body {
+  font-family: 'Vazir', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:root {
+  --brand-primary: #0028be;
+  --brand-secondary: #008dc4;
+  --brand-accent: #8ed5ff;
+  --brand-muted: #aab8c3;
+  --brand-highlight: #e9e60a;
+}
 
 /* Custom Variables */
 :root {
@@ -305,83 +437,6 @@ html {
   text-overflow: ellipsis;
 }
 
-@font-face {
-  font-display: swap;
-  font-family: Inter;
-  font-style: normal;
-  font-weight: 400;
-  src: url('$fonts/Inter-Regular.woff2') format('woff2');
-  size-adjust: 94%;
-}
-
-@font-face {
-  font-display: swap;
-  font-family: Inter;
-  font-style: italic;
-  font-weight: 400;
-  src: url('$fonts/Inter-Italic.woff2') format('woff2');
-  size-adjust: 94%;
-}
-
-@font-face {
-  font-display: swap;
-  font-family: Inter;
-  font-style: normal;
-  font-weight: 500;
-  src: url('$fonts/Inter-SemiBold.woff2') format('woff2');
-  size-adjust: 94%;
-}
-
-@font-face {
-  font-display: swap;
-  font-family: Inter;
-  font-style: italic;
-  font-weight: 500;
-  src: url('$fonts/Inter-SemiBoldItalic.woff2') format('woff2');
-  size-adjust: 94%;
-}
-
-@font-face {
-  font-display: swap;
-  font-family: Inter;
-  font-style: normal;
-  font-weight: 600;
-  src: url('$fonts/Inter-Bold.woff2') format('woff2');
-  size-adjust: 94%;
-}
-
-@font-face {
-  font-display: swap;
-  font-family: Inter;
-  font-style: italic;
-  font-weight: 600;
-  src: url('$fonts/Inter-BoldItalic.woff2') format('woff2');
-  size-adjust: 94%;
-}
-
-@font-face {
-  font-display: swap;
-  font-family: Roboto Mono;
-  font-style: normal;
-  font-weight: 400;
-  src: url('$fonts/roboto-mono-latin-400-normal.woff2') format('woff2');
-}
-
-@font-face {
-  font-display: swap;
-  font-family: Roboto Mono;
-  font-style: normal;
-  font-weight: 700;
-  src: url('$fonts/roboto-mono-latin-700-normal.woff2') format('woff2');
-}
-
-@font-face {
-  font-display: swap;
-  font-family: Roboto Mono;
-  font-style: italic;
-  font-weight: 400;
-  src: url('$fonts/roboto-mono-latin-400-italic.woff2') format('woff2');
-}
 
 /*
 
@@ -2731,6 +2786,49 @@ html {
   animation: fadeIn 0.5s ease-out forwards;
 }
 
+.logo-float {
+  animation: floaty 6s ease-in-out infinite;
+}
+
+@keyframes floaty {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.glass-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.75));
+  box-shadow:
+    0 20px 60px rgba(0, 40, 190, 0.15),
+    0 8px 20px rgba(0, 141, 196, 0.1);
+  backdrop-filter: blur(12px);
+}
+
+.auth-hero-bg {
+  background: radial-gradient(circle at 20% 20%, rgba(142, 213, 255, 0.2), transparent 35%),
+    radial-gradient(circle at 80% 0%, rgba(0, 40, 190, 0.25), transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(0, 141, 196, 0.25), transparent 35%),
+    linear-gradient(135deg, #eef6ff 0%, #f7fbff 50%, #eef6ff 100%);
+}
+
+.auth-hero-bg.dark {
+  background: radial-gradient(circle at 20% 20%, rgba(142, 213, 255, 0.15), transparent 35%),
+    radial-gradient(circle at 80% 0%, rgba(0, 40, 190, 0.3), transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(0, 141, 196, 0.3), transparent 35%),
+    linear-gradient(135deg, #070b17 0%, #0f172a 50%, #0a1024 100%);
+}
+
+.modal-backdrop {
+  background: rgba(4, 6, 18, 0.55);
+  backdrop-filter: blur(8px);
+}
+
 /* Chat Badges Animation */
 
 @keyframes ios-wiggle {
@@ -2815,4 +2913,72 @@ html {
 
 .sharepoint-picker-bg{
   background-color: #F5F5F5;
+}
+
+/* -------- Auth experience polish -------- */
+.auth-ambient-layer {
+  background-image: url('/assets/back.png');
+  background-size: cover;
+  background-position: center;
+  filter: blur(4px);
+  opacity: 0.75;
+  transform: scale(1.05);
+}
+
+.auth-grid-overlay {
+  background: radial-gradient(circle at 20% 20%, rgba(0, 140, 196, 0.08), transparent 30%),
+    radial-gradient(circle at 80% 0%, rgba(0, 40, 190, 0.06), transparent 30%),
+    radial-gradient(circle at 50% 80%, rgba(142, 213, 255, 0.08), transparent 35%);
+}
+
+@keyframes auth-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(22px) scale(0.98);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(0) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes soft-pulse {
+  0% {
+    box-shadow: 0 8px 30px rgba(0, 40, 190, 0.15), 0 0 0 0 rgba(0, 141, 196, 0.15);
+  }
+  100% {
+    box-shadow: 0 12px 40px rgba(0, 40, 190, 0.18), 0 0 0 18px rgba(0, 141, 196, 0);
+  }
+}
+
+@keyframes float-y {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.animate-auth-card {
+  animation: auth-fade-up 650ms ease forwards;
+}
+
+.animate-soft-pulse {
+  animation: soft-pulse 2.4s ease-in-out infinite;
+}
+
+.animate-float-y {
+  animation: float-y 3.4s ease-in-out infinite;
+}
+
+.input-focus-gleam:focus-within {
+  box-shadow: 0 15px 50px rgba(0, 40, 190, 0.16), 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
