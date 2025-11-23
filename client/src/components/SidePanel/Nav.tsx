@@ -19,7 +19,8 @@ function NavContent({ links, isCollapsed, resize }: Omit<NavProps, 'defaultActiv
   return (
     <div
       data-collapsed={isCollapsed}
-      className="bg-token-sidebar-surface-primary hide-scrollbar group flex-shrink-0 overflow-x-hidden"
+      dir="rtl"
+      className="hide-scrollbar group flex-shrink-0 overflow-x-hidden text-right glass-panel backdrop-blur-xl bg-white/70"
     >
       <div className="h-full">
         <div className="flex h-full min-h-0 flex-col">
@@ -66,7 +67,7 @@ function NavContent({ links, isCollapsed, resize }: Omit<NavProps, 'defaultActiv
                             <Button
                               variant="outline"
                               size="sm"
-                              className="w-full justify-start bg-transparent text-text-secondary data-[state=open]:bg-surface-secondary data-[state=open]:text-text-primary"
+                              className="w-full flex-row-reverse items-center justify-between bg-transparent text-right text-text-secondary data-[state=open]:bg-surface-secondary data-[state=open]:text-text-primary"
                               onClick={(e) => {
                                 if (link.onClick) {
                                   link.onClick(e);
@@ -74,12 +75,12 @@ function NavContent({ links, isCollapsed, resize }: Omit<NavProps, 'defaultActiv
                                 }
                               }}
                             >
-                              <link.icon className="mr-2 h-4 w-4" />
+                              <link.icon className="ml-2 h-4 w-4" />
                               {localize(link.title)}
                               {link.label != null && link.label && (
                                 <span
                                   className={cn(
-                                    'ml-auto opacity-100 transition-all duration-300 ease-in-out',
+                                    'mr-auto opacity-100 transition-all duration-300 ease-in-out',
                                     variant === 'default' ? 'text-text-primary' : '',
                                   )}
                                 >

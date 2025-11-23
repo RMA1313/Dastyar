@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useRecoilValue } from 'recoil';
 import { useMessageProcess } from '~/hooks';
 import type { TMessageProps } from '~/common';
@@ -39,42 +39,62 @@ export default function Message(props: TMessageProps) {
   } = useMessageProcess({ message: props.message });
   const { message, currentEditId, setCurrentEditId } = props;
   const maximizeChatSpace = useRecoilValue(store.maximizeChatSpace);
+  const chatDirection = useRecoilValue(store.chatDirection);
+  const isRTL = (chatDirection ?? '').toString().toLowerCase() === 'rtl';
 
   if (!message || typeof message !== 'object') {
     return null;
   }
 
   const { children, messageId = null } = message;
+  const isUser = message?.isCreatedByUser === true;
+  const getAlignClass = useCallback(
+    (fromUser?: boolean) =>
+      fromUser ? (isRTL ? 'justify-start' : 'justify-end') : isRTL ? 'justify-end' : 'justify-start',
+    [isRTL],
+  );
+  const primaryAlign = getAlignClass(isUser);
 
   return (
     <>
       <MessageContainer handleScroll={handleScroll}>
         {showSibling ? (
-          <div className="my-2 flex w-full justify-end px-3 py-2 sm:px-4 md:gap-5">
+          <div className="flex w-full flex-col gap-2">
             <div
               className={cn(
-                'flex w-full flex-row flex-wrap justify-between gap-2 md:flex-nowrap md:gap-3',
-                maximizeChatSpace ? 'w-full max-w-full' : 'md:max-w-5xl xl:max-w-6xl',
+                'flex w-full flex-wrap justify-between gap-2 md:flex-nowrap md:gap-2',
+                maximizeChatSpace ? 'w-full max-w-full' : 'max-w-full',
               )}
             >
-              <MessageRender
-                {...props}
-                message={message}
-                isSubmittingFamily={isSubmittingFamily}
-                isCard
-              />
-              <MessageRender
-                {...props}
-                isMultiMessage
-                isCard
-                message={siblingMessage ?? latestMultiMessage ?? undefined}
-                isSubmittingFamily={isSubmittingFamily}
-              />
+              <div className={cn('flex w-full md:w-1/2', primaryAlign)}>
+                <MessageRender
+                  {...props}
+                  message={message}
+                  isSubmittingFamily={isSubmittingFamily}
+                  isCard
+                />
+              </div>
+              <div
+                className={cn(
+                  'flex w-full md:w-1/2',
+                  getAlignClass((siblingMessage ?? latestMultiMessage ?? {})?.isCreatedByUser),
+                )}
+              >
+                <MessageRender
+                  {...props}
+                  isMultiMessage
+                  isCard
+                  message={siblingMessage ?? latestMultiMessage ?? undefined}
+                  isSubmittingFamily={isSubmittingFamily}
+                />
+              </div>
             </div>
           </div>
         ) : (
-          <div className="flex w-full justify-end px-3 py-2 sm:px-4 md:gap-5">
-            <MessageRender {...props} />
+          <div className="flex w-full flex-col">
+            <div className={cn('flex w-full', primaryAlign)}>
+              <MessageRender {...props} />
+            </div>
           </div>
         )}
       </MessageContainer>

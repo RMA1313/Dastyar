@@ -11,7 +11,7 @@ import Thinking from './Parts/Thinking';
 import { useLocalize } from '~/hooks';
 import Container from './Container';
 import Markdown from './Markdown';
-import { cn } from '~/utils';
+import { cn, detectTextDirection } from '~/utils';
 import store from '~/store';
 
 const ERROR_CONNECTION_TEXT = 'Error connecting to server, try refreshing the page.';
@@ -49,7 +49,7 @@ const ErrorBox = ({
     role="alert"
     aria-live="assertive"
     className={cn(
-      'rounded-xl border border-red-500/20 bg-red-500/5 px-3 py-2 text-sm text-gray-600 dark:text-gray-200',
+      'bg-transparent border-0 shadow-none px-0 py-0 text-sm text-gray-600 dark:text-gray-200',
       className,
     )}
   >
@@ -64,7 +64,7 @@ const ConnectionError = ({ message }: { message?: TMessage }) => {
     <Suspense fallback={<LoadingFallback />}>
       <DelayedRender delay={DELAYED_ERROR_TIMEOUT}>
         <Container message={message}>
-          <div className="mt-2 rounded-xl border border-red-500/20 bg-red-50/50 px-4 py-3 text-sm text-red-700 shadow-sm transition-all dark:bg-red-950/30 dark:text-red-100">
+          <div className="mt-2 bg-transparent border-0 shadow-none px-0 py-0 text-sm text-red-700 transition-all dark:text-red-100">
             {localize('com_ui_error_connection')}
           </div>
         </Container>
@@ -94,6 +94,8 @@ export const ErrorMessage = ({
 const DisplayMessage = ({ text, isCreatedByUser, message, showCursor }: TDisplayProps) => {
   const { isSubmitting = false, isLatestMessage = false } = useMessageContext();
   const enableUserMsgMarkdown = useRecoilValue(store.enableUserMsgMarkdown);
+  const direction = useMemo(() => detectTextDirection(text), [text]);
+  const textAlign = direction === 'rtl' ? 'right' : 'left';
 
   const showCursorState = useMemo(
     () => showCursor === true && isSubmitting,
@@ -111,17 +113,20 @@ const DisplayMessage = ({ text, isCreatedByUser, message, showCursor }: TDisplay
   }, [isCreatedByUser, enableUserMsgMarkdown, text, isLatestMessage]);
 
   return (
-    <Container message={message}>
+    <Container message={message} direction={direction} style={{ textAlign }}>
       <div
         className={cn(
-          'markdown prose message-content dark:prose-invert light w-full break-words text-right',
+          'markdown prose message-content dark:prose-invert light w-full break-words max-w-[780px] mx-auto space-y-4 leading-8 text-gray-800 dark:text-gray-100 prose-headings:font-semibold prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-p:leading-8 prose-p:text-gray-800 dark:prose-p:text-gray-100',
           isSubmitting && 'submitting',
           showCursorState && text.length > 0 && 'result-streaming',
           isCreatedByUser && !enableUserMsgMarkdown && 'whitespace-pre-wrap',
           isCreatedByUser ? 'dark:text-gray-20' : 'dark:text-gray-100',
+          direction === 'rtl' ? 'text-right' : 'text-left',
         )}
-        dir="rtl"
-        style={{ unicodeBidi: 'normal' }}
+        style={{
+          whiteSpace: 'normal',
+          wordBreak: 'break-word',
+        }}
       >
         {content}
       </div>

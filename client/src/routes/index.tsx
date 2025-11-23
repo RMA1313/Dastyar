@@ -12,11 +12,13 @@ import ShareRoute from './ShareRoute';
 import ChatRoute from './ChatRoute';
 import Search from './Search';
 import Root from './Root';
+import SupportChatWidget from '~/components/SupportChat/SupportChatWidget';
 
 const AuthLayout = () => (
   <AuthContextProvider>
     <Outlet />
     <ApiErrorWatcher />
+    <SupportChatWidget />
   </AuthContextProvider>
 );
 

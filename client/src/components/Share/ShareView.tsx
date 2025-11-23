@@ -119,17 +119,11 @@ function SharedView() {
     );
   }
 
-  const footer = (
-    <div className="w-full border-t-0 pl-0 pt-2 md:w-[calc(100%-.5rem)] md:border-t-0 md:border-transparent md:pl-0 md:pt-0 md:dark:border-transparent">
-      <Footer className="relative mx-auto mt-4 flex max-w-[55rem] flex-wrap items-center justify-center gap-2 px-3 pb-4 pt-2 text-center text-xs text-text-secondary" />
-    </div>
-  );
-
   const mainContent = (
     <div className="transition-width relative flex h-full w-full flex-1 flex-col items-stretch overflow-hidden pt-0 dark:bg-surface-secondary">
       <div className="flex h-full flex-col text-text-primary" role="presentation">
         {content}
-        {footer}
+        <Footer />
       </div>
     </div>
   );
@@ -147,7 +141,7 @@ function SharedView() {
 
   return (
     <ShareContext.Provider value={{ isSharedConvo: true }}>
-      <div className="relative flex min-h-screen w-full dark:bg-surface-secondary">
+      <div data-testid="share-view" className="relative flex min-h-screen w-full dark:bg-surface-secondary">
         <main className="relative flex w-full grow overflow-hidden dark:bg-surface-secondary">
           {artifactsContainer}
         </main>

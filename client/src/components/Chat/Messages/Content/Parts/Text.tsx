@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil';
 import MarkdownLite from '~/components/Chat/Messages/Content/MarkdownLite';
 import Markdown from '~/components/Chat/Messages/Content/Markdown';
 import { useMessageContext } from '~/Providers';
-import { cn } from '~/utils';
+import { cn, detectTextDirection } from '~/utils';
 import store from '~/store';
 
 type TextPartProps = {
@@ -21,6 +21,8 @@ const TextPart = memo(({ text, isCreatedByUser, showCursor }: TextPartProps) => 
   const { isSubmitting = false, isLatestMessage = false } = useMessageContext();
   const enableUserMsgMarkdown = useRecoilValue(store.enableUserMsgMarkdown);
   const showCursorState = useMemo(() => showCursor && isSubmitting, [showCursor, isSubmitting]);
+  const direction = useMemo(() => detectTextDirection(text), [text]);
+  const textAlign = direction === 'rtl' ? 'right' : 'left';
 
   const content: ContentType = useMemo(() => {
     if (!isCreatedByUser) {
@@ -34,13 +36,16 @@ const TextPart = memo(({ text, isCreatedByUser, showCursor }: TextPartProps) => 
 
   return (
     <div
+      dir={direction}
       className={cn(
         isSubmitting ? 'submitting' : '',
         showCursorState && !!text.length ? 'result-streaming' : '',
         'markdown prose message-content dark:prose-invert light w-full break-words',
         isCreatedByUser && !enableUserMsgMarkdown && 'whitespace-pre-wrap',
         isCreatedByUser ? 'dark:text-gray-20' : 'dark:text-gray-100',
+        direction === 'rtl' ? 'text-right items-end' : 'text-left items-start',
       )}
+      style={{ textAlign }}
     >
       {content}
     </div>

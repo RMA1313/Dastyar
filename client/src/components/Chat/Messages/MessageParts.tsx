@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { useRecoilValue } from 'recoil';
+import { ContentTypes } from 'librechat-data-provider';
 import type { TMessageContentParts } from 'librechat-data-provider';
 import type { TMessageProps, TMessageIcon } from '~/common';
 import { useMessageHelpers, useLocalize, useAttachments } from '~/hooks';
@@ -11,7 +12,7 @@ import SiblingSwitch from './SiblingSwitch';
 import MultiMessage from './MultiMessage';
 import HoverButtons from './HoverButtons';
 import SubRow from './SubRow';
-import { cn } from '~/utils';
+import { cn, detectTextDirection } from '~/utils';
 import store from '~/store';
 
 export default function Message(props: TMessageProps) {
@@ -41,6 +42,39 @@ export default function Message(props: TMessageProps) {
   const fontSize = useAtomValue(fontSizeAtom);
   const maximizeChatSpace = useRecoilValue(store.maximizeChatSpace);
   const { children, messageId = null, isCreatedByUser } = message ?? {};
+  const primaryText = useMemo(() => {
+    if (typeof message?.text === 'string' && message.text.trim().length > 0) {
+      return message.text;
+    }
+
+    const textPart = (message?.content as Array<TMessageContentParts | undefined> | undefined)?.find(
+      (part) => {
+        if (!part || part.type !== ContentTypes.TEXT) {
+          return false;
+        }
+        const value =
+          typeof part.text === 'string'
+            ? part.text
+            : typeof part.text?.value === 'string'
+              ? part.text.value
+              : '';
+        return value.trim().length > 0;
+      },
+    );
+
+    if (!textPart || textPart.type !== ContentTypes.TEXT) {
+      return '';
+    }
+
+    const value =
+      typeof textPart.text === 'string'
+        ? textPart.text
+        : typeof textPart.text?.value === 'string'
+          ? textPart.text.value
+          : '';
+
+    return value;
+  }, [message?.content, message?.text]);
 
   const name = useMemo(() => {
     let result = '';
@@ -80,11 +114,33 @@ export default function Message(props: TMessageProps) {
   }
 
   const baseClasses = {
-    common: 'group mx-auto flex flex-1 gap-3 transition-all duration-300 transform-gpu',
-    chat: maximizeChatSpace
-      ? 'w-full max-w-full md:px-5 lg:px-1 xl:px-5'
-      : 'md:max-w-[47rem] xl:max-w-[55rem]',
+    common: 'group flex w-full items-start gap-2 transition-all duration-200',
+    chat: maximizeChatSpace ? 'max-w-full' : 'md:max-w-5xl',
   };
+  const chatDirection = useRecoilValue(store.chatDirection);
+  const isRTLLayout = (chatDirection ?? '').toString().toLowerCase() === 'rtl';
+  const isUser = isCreatedByUser === true;
+  const messageDirection = detectTextDirection(primaryText);
+  const isRTLMessage = messageDirection === 'rtl';
+  const wrapperDirection = useMemo(() => {
+    if (isRTLLayout) {
+      return 'flex-row-reverse';
+    }
+    return isUser ? 'flex-row-reverse' : 'flex-row';
+  }, [isRTLLayout, isUser]);
+  const rowAlignment = isRTLLayout
+    ? 'justify-end'
+    : isUser
+      ? 'justify-end'
+      : 'justify-start';
+  const bubbleBase =
+    'flex w-full flex-col gap-3 text-sm leading-8 bg-white/70 dark:bg-gray-800/70 text-text-primary dark:text-gray-100 border border-white/30 dark:border-gray-700 shadow-sm rounded-3xl p-6 backdrop-blur-xl';
+  const bubbleWidth = 'w-full max-w-[780px] mx-auto';
+  const bubbleTone = '';
+  const bubbleBorder = '';
+  const textAlign = isRTLMessage || isRTLLayout || isUser ? 'text-right' : 'text-left';
+  const bubbleDir = isRTLMessage ? 'rtl' : isRTLLayout ? 'rtl' : 'ltr';
+  const bubbleTextAlign = isRTLMessage || isRTLLayout || isUser ? 'right' : 'left';
 
   return (
     <>
@@ -93,69 +149,91 @@ export default function Message(props: TMessageProps) {
         onWheel={handleScroll}
         onTouchMove={handleScroll}
       >
-        <div className="m-auto justify-center p-4 py-2 md:gap-6">
+        <div className={cn('flex w-full', rowAlignment)}>
           <div
             id={messageId ?? ''}
             aria-label={`message-${message.depth}-${messageId}`}
-            className={cn(baseClasses.common, baseClasses.chat, 'message-render')}
+            className={cn(baseClasses.common, baseClasses.chat, 'message-render', wrapperDirection)}
+            dir={bubbleDir}
+            style={{ unicodeBidi: 'plaintext', whiteSpace: 'normal', wordBreak: 'break-word' }}
+            data-testid="message-wrapper"
           >
-            <div className="relative flex flex-shrink-0 flex-col items-center">
-              <div className="flex h-6 w-6 items-center justify-center overflow-hidden rounded-full pt-0.5">
+            {!isUser && (
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden bg-transparent">
                 <MessageIcon iconData={iconData} assistant={assistant} agent={agent} />
               </div>
-            </div>
+            )}
             <div
               className={cn(
-                'relative flex w-11/12 flex-col',
-                isCreatedByUser ? 'user-turn' : 'agent-turn',
+                'flex w-full flex-col gap-2',
+                isRTLLayout || isUser ? 'items-end' : 'items-start',
               )}
             >
-              <h2 className={cn('select-none font-semibold text-text-primary', fontSize)}>
+              <h2
+                className={cn(
+                  'select-none text-sm font-semibold text-text-primary',
+                  textAlign,
+                  fontSize,
+                )}
+              >
                 {name}
               </h2>
-              <div className="flex flex-col gap-1">
-                <div className="flex max-w-full flex-grow flex-col gap-0">
-                  <ContentParts
-                    edit={edit}
-                    isLast={isLast}
-                    enterEdit={enterEdit}
-                    siblingIdx={siblingIdx}
-                    attachments={attachments}
-                    isSubmitting={isSubmitting}
-                    searchResults={searchResults}
-                    messageId={message.messageId}
-                    setSiblingIdx={setSiblingIdx}
-                    isCreatedByUser={message.isCreatedByUser}
-                    conversationId={conversation?.conversationId}
-                    isLatestMessage={messageId === latestMessage?.messageId}
-                    content={message.content as Array<TMessageContentParts | undefined>}
-                  />
-                </div>
-                {isLast && isSubmitting ? (
-                  <div className="mt-1 h-[27px] bg-transparent" />
-                ) : (
-                  <SubRow classes="text-xs">
-                    <SiblingSwitch
-                      siblingIdx={siblingIdx}
-                      siblingCount={siblingCount}
-                      setSiblingIdx={setSiblingIdx}
-                    />
-                    <HoverButtons
-                      index={index}
-                      isEditing={edit}
-                      message={message}
-                      enterEdit={enterEdit}
-                      isSubmitting={isSubmitting}
-                      conversation={conversation ?? null}
-                      regenerate={() => regenerateMessage()}
-                      copyToClipboard={copyToClipboard}
-                      handleContinue={handleContinue}
-                      latestMessage={latestMessage}
-                      isLast={isLast}
-                    />
-                  </SubRow>
+              <div
+                className={cn(
+                  bubbleBase,
+                  bubbleWidth,
+                  bubbleTone,
+                  bubbleBorder,
+                  isRTLMessage || isRTLLayout || isUser ? 'items-end text-right' : 'items-start text-left',
                 )}
+                style={{
+                  textAlign: bubbleTextAlign,
+                  unicodeBidi: 'plaintext',
+                  whiteSpace: 'normal',
+                  wordBreak: 'break-word',
+                }}
+                data-testid="message-bubble"
+              >
+                <ContentParts
+                  edit={edit}
+                  isLast={isLast}
+                  enterEdit={enterEdit}
+                  siblingIdx={siblingIdx}
+                  attachments={attachments}
+                  isSubmitting={isSubmitting}
+                  searchResults={searchResults}
+                  messageId={message.messageId}
+                  setSiblingIdx={setSiblingIdx}
+                  isCreatedByUser={message.isCreatedByUser}
+                  conversationId={conversation?.conversationId}
+                  isLatestMessage={messageId === latestMessage?.messageId}
+                  content={message.content as Array<TMessageContentParts | undefined>}
+                />
               </div>
+              {isLast && isSubmitting ? (
+                <div className="mt-1 h-[27px] bg-transparent" />
+              ) : (
+                <SubRow classes={cn('text-xs w-full', isUser ? 'justify-end' : 'justify-between')}>
+                  <SiblingSwitch
+                    siblingIdx={siblingIdx}
+                    siblingCount={siblingCount}
+                    setSiblingIdx={setSiblingIdx}
+                  />
+                  <HoverButtons
+                    index={index}
+                    isEditing={edit}
+                    message={message}
+                    enterEdit={enterEdit}
+                    isSubmitting={isSubmitting}
+                    conversation={conversation ?? null}
+                    regenerate={() => regenerateMessage()}
+                    copyToClipboard={copyToClipboard}
+                    handleContinue={handleContinue}
+                    latestMessage={latestMessage}
+                    isLast={isLast}
+                  />
+                </SubRow>
+              )}
             </div>
           </div>
         </div>

@@ -54,7 +54,7 @@ const userSchema = new Schema<IUser>(
     },
     phone: {
       type: String,
-      required: false,
+      required: true,
       unique: true,
       trim: true,
       sparse: true,
@@ -192,6 +192,10 @@ const userSchema = new Schema<IUser>(
       type: Schema.Types.ObjectId,
       ref: 'User',
       default: null,
+    },
+    language: {
+      type: String,
+      default: 'fa',
     },
     /** Field for external source identification (for consistency with TPrincipal schema) */
     idOnTheSource: {

@@ -5,7 +5,6 @@ import { TranslationKeys, useLocalize } from '~/hooks';
 import SocialLoginRender from './SocialLoginRender';
 import { BlinkAnimation } from './BlinkAnimation';
 import { Banner } from '../Banners';
-import Footer from './Footer';
 import ThemeToggle from './ThemeToggle';
 import { logUiError } from '~/utils/clientLog';
 
@@ -64,7 +63,7 @@ function AuthLayout({
   return (
     <div
       dir="rtl"
-      className="relative min-h-screen overflow-hidden bg-slate-50 text-slate-900 font-[300] dark:bg-slate-950 dark:text-slate-100"
+      className="relative flex min-h-screen flex-col overflow-hidden bg-slate-50 text-slate-900 font-[300] dark:bg-slate-950 dark:text-slate-100"
       style={{ fontFamily: 'Vazir, system-ui, -apple-system, sans-serif' }}>
       <div className="pointer-events-none absolute inset-0">
         <div className="auth-ambient-layer absolute inset-0" aria-hidden="true" />
@@ -72,7 +71,7 @@ function AuthLayout({
         <div className="absolute inset-0 bg-gradient-to-b from-white/75 via-white/80 to-slate-50/90 dark:from-slate-900/80 dark:via-slate-950/80 dark:to-slate-950" aria-hidden="true" />
       </div>
       <Banner />
-      <header className="relative z-10 mx-auto flex max-w-5xl items-center justify-between px-6 pb-4 text-center">
+      <header className="relative z-10 mx-auto flex w-full max-w-5xl items-center justify-between px-6 pb-4 pt-4 text-center">
         <div className="flex items-center gap-3">
           <BlinkAnimation active={isFetching}>
             <img
@@ -86,8 +85,14 @@ function AuthLayout({
         <ThemeToggle />
       </header>
 
-      <main className="relative z-10 mx-auto flex max-w-5xl flex-1 flex-col items-center px-4 pb-12 text-center">
-        <div className="w-full max-w-xl rounded-[28px] border border-white/60 bg-white/85 p-8 shadow-xl shadow-slate-200/60 backdrop-blur-xl transition-all duration-500 hover:-translate-y-[2px] hover:shadow-2xl hover:shadow-sky-200/50 dark:border-white/10 dark:bg-slate-900/85 dark:shadow-black/30 animate-auth-card input-focus-gleam">
+      <main
+        data-testid="auth-main"
+        className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center px-4 pb-12 text-center sm:px-6"
+      >
+        <div
+          data-testid="auth-card"
+          className="w-full max-w-2xl rounded-[28px] border border-white/60 bg-white/85 p-8 shadow-xl shadow-slate-200/60 backdrop-blur-xl transition-all duration-500 hover:-translate-y-[2px] hover:shadow-2xl hover:shadow-sky-200/50 dark:border-white/10 dark:bg-slate-900/85 dark:shadow-black/30 animate-auth-card input-focus-gleam"
+        >
           {!hasStartupConfigError && !isFetching && (
             <h1 className="mb-4 text-3xl font-bold text-slate-900 dark:text-white text-center" style={{ userSelect: 'none' }}>
               {header}
@@ -100,9 +105,6 @@ function AuthLayout({
               <SocialLoginRender startupConfig={startupConfig} />
             </div>
           )}
-        </div>
-        <div className="mt-6 w-full max-w-xl">
-          <Footer startupConfig={startupConfig} />
         </div>
       </main>
     </div>

@@ -229,7 +229,7 @@ const Registration: React.FC = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <div>
-          <div className="relative">
+          <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_20px_60px_-32px_rgba(0,40,190,0.45)] backdrop-blur transition-all duration-300 focus-within:-translate-y-[1px] focus-within:border-sky-400 focus-within:shadow-[0_25px_80px_-40px_rgba(0,140,196,0.65)] focus-within:ring-2 focus-within:ring-sky-300/60 dark:border-white/10 dark:bg-slate-900/70 dark:shadow-black/25">
             <input
               id="phone"
               type="tel"
@@ -284,7 +284,7 @@ const Registration: React.FC = () => {
             />
             <label
               htmlFor="referralCode"
-              className="absolute start-3 top-1.5 z-10 origin-[0] -translate-y-4 scale-75 transform bg-surface-primary px-2 text-sm text-text-secondary-alt duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-1.5 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-[#0028be] dark:peer-focus:text-[#8ed5ff] rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"
+              className="absolute start-3 top-1.5 z-10 origin-[0] -translate-y-4 scale-75 transform bg-surface-primary px-2 text-right text-sm text-text-secondary-alt duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-1.5 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-[#0028be] dark:peer-focus:text-[#8ed5ff] rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"
             >
               کد معرف
             </label>

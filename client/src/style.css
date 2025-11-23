@@ -563,6 +563,9 @@ Step 5: rebuild frontend code: `npm run frontend` (or rebuild docker).
   opacity: 0;
   transition: all 1s ease-in-out;
 } */
+svg, svg * {
+  font-family: unset !important;
+}
 
 select {
   --tw-shadow: 0 0 transparent;
@@ -2053,6 +2056,10 @@ html {
   width: 12px;
   will-change: transform;
 }
+:dir(rtl) .submitting .result-thinking:empty:last-child:after {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+}
 
 .shadow-stroke {
   position: relative;
@@ -2132,6 +2139,12 @@ html {
   margin-left: 0.25rem;
   vertical-align: middle;
   font-size: 0.5rem;
+}
+:dir(rtl) .result-streaming > :not(ol):not(ul):not(pre):last-child:after,
+:dir(rtl) .result-streaming > pre:last-child code:after {
+  float: left;
+  margin-left: 0;
+  margin-right: 0.35rem;
 }
 
 @supports (selector(:has(*))) {
@@ -2981,4 +2994,67 @@ html {
 
 .input-focus-gleam:focus-within {
   box-shadow: 0 15px 50px rgba(0, 40, 190, 0.16), 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+:root {
+  --brand-gradient-start: #2e5bff;
+  --brand-gradient-end: #00a4ff;
+  --brand-navy: #003d8f;
+  --brand-light: #5e9cff;
+  --glass-border: rgba(255, 255, 255, 0.55);
+  --glass-surface: rgba(255, 255, 255, 0.7);
+  --glass-strong: rgba(255, 255, 255, 0.82);
+  --glass-shadow: 0 24px 80px -42px rgba(0, 61, 143, 0.55);
+}
+
+.glass-panel {
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  backdrop-filter: blur(18px);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-panel-strong {
+  background: var(--glass-strong);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 28px;
+  backdrop-filter: blur(22px);
+  box-shadow:
+    0 30px 90px -40px rgba(0, 61, 143, 0.5),
+    0 8px 24px -10px rgba(46, 91, 255, 0.2);
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 16px 60px -36px rgba(0, 61, 143, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.glass-fab {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 14px 45px -24px rgba(0, 61, 143, 0.5),
+    0 2px 10px -6px rgba(46, 91, 255, 0.35);
+  color: var(--brand-navy);
+}
+
+.brand-gradient {
+  background-image: linear-gradient(135deg, var(--brand-gradient-start), var(--brand-gradient-end));
+}
+
+.nice-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.nice-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.15);
+  border-radius: 10px;
+}
+.dark .nice-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
 }

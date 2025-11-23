@@ -131,9 +131,12 @@ export default function Conversation({ conversation, retainView, toggleNav }: Co
 
   return (
     <div
+      dir="rtl"
       className={cn(
-        'group relative flex h-12 w-full items-center rounded-lg transition-colors duration-200 md:h-9',
-        isActiveConvo ? 'bg-surface-active-alt' : 'hover:bg-surface-active-alt',
+        'group relative flex h-12 w-full items-center justify-between rounded-xl px-3 text-right transition-colors duration-200 md:h-10',
+        isActiveConvo
+          ? 'bg-surface-active-alt shadow-[0_10px_40px_-32px_rgba(59,130,246,0.65)]'
+          : 'hover:bg-surface-active-alt/80',
       )}
       role="button"
       tabIndex={renaming ? -1 : 0}
@@ -184,7 +187,7 @@ export default function Conversation({ conversation, retainView, toggleNav }: Co
       )}
       <div
         className={cn(
-          'mr-2 flex origin-left',
+          'ml-2 flex origin-left',
           isPopoverActive || isActiveConvo
             ? 'pointer-events-auto max-w-[28px] scale-x-100 opacity-100'
             : 'pointer-events-none max-w-0 scale-x-0 opacity-0 group-focus-within:pointer-events-auto group-focus-within:max-w-[28px] group-focus-within:scale-x-100 group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:max-w-[28px] group-hover:scale-x-100 group-hover:opacity-100',

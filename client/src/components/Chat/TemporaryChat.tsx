@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { TooltipAnchor } from '@librechat/client';
 import { MessageCircleDashed } from 'lucide-react';
-import { useRecoilState, useRecoilCallback } from 'recoil';
+import { useRecoilState, useRecoilCallback, useRecoilValue } from 'recoil';
 import { useChatContext } from '~/Providers';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
@@ -12,6 +12,8 @@ export function TemporaryChat() {
   const localize = useLocalize();
   const [isTemporary, setIsTemporary] = useRecoilState(store.isTemporary);
   const { conversation, isSubmitting } = useChatContext();
+  const chatDirection = useRecoilValue(store.chatDirection);
+  const isRTL = (chatDirection ?? '').toString().toLowerCase() === 'rtl';
 
   const temporaryBadge = {
     id: 'temporary',
@@ -36,7 +38,7 @@ export function TemporaryChat() {
   }
 
   return (
-    <div className="relative flex flex-wrap items-center gap-2" dir="rtl">
+    <div className="relative flex flex-wrap items-center gap-2" dir={isRTL ? 'rtl' : 'ltr'}>
       <TooltipAnchor
         description={localize(temporaryBadge.label)}
         render={
@@ -44,17 +46,17 @@ export function TemporaryChat() {
             onClick={handleBadgeToggle}
             aria-label={localize(temporaryBadge.label)}
             className={cn(
-              'inline-flex size-11 flex-shrink-0 items-center justify-center rounded-[18px] border border-white/60 bg-gradient-to-br from-sky-50/85 via-white/95 to-indigo-50/80 text-slate-800 shadow-[0_16px_40px_-24px_rgba(59,130,246,0.75)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-[1px] hover:shadow-[0_22px_55px_-24px_rgba(99,102,241,0.7)] dark:border-white/10 dark:bg-slate-900/90 dark:text-white dark:shadow-black/30',
+              'inline-flex size-10 flex-shrink-0 items-center justify-center rounded-xl border border-border-light bg-surface-secondary text-text-primary shadow-sm transition-colors duration-200 hover:bg-surface-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
               isTemporary
-                ? 'ring-2 ring-sky-300/80 ring-offset-2 ring-offset-white dark:ring-sky-500/70 dark:ring-offset-slate-900'
-                : 'hover:border-sky-200 hover:bg-white/95 dark:hover:border-sky-400/50 dark:hover:bg-slate-900/90',
+                ? 'ring-2 ring-primary/70 ring-offset-2 ring-offset-surface-primary dark:ring-primary/70'
+                : '',
               'active:scale-[0.99]',
             )}
           >
             {temporaryBadge.icon && (
               <temporaryBadge.icon
                 className={cn(
-                  'relative h-5 w-5 text-sky-700 transition-colors dark:text-sky-300 md:h-4 md:w-4',
+                  'relative h-5 w-5 text-text-secondary transition-colors md:h-4 md:w-4',
                   !temporaryBadge.label && 'mx-auto',
                 )}
               />

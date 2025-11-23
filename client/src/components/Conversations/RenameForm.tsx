@@ -41,14 +41,15 @@ const RenameForm: React.FC<RenameFormProps> = ({
 
   return (
     <div
-      className="absolute inset-0 z-20 flex w-full items-center rounded-lg bg-surface-active-alt p-1.5"
+      className="absolute inset-0 z-20 flex w-full items-center rounded-lg bg-surface-active-alt p-1.5 text-right"
       role="form"
       aria-label={localize('com_ui_rename_conversation')}
+      dir="rtl"
     >
       <input
         ref={inputRef}
         type="text"
-        className="w-full rounded bg-transparent p-0.5 text-sm leading-tight focus-visible:outline-none"
+        className="w-full rounded bg-transparent p-0.5 text-sm leading-tight text-right focus-visible:outline-none"
         value={titleInput}
         onChange={(e) => setTitleInput(e.target.value)}
         onKeyDown={handleKeyDown}

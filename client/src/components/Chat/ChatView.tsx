@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { useForm } from 'react-hook-form';
 import { Spinner } from '@librechat/client';
@@ -8,23 +8,21 @@ import type { TMessage } from 'librechat-data-provider';
 import type { ChatFormValues } from '~/common';
 import { ChatContext, AddedChatContext, useFileMapContext, ChatFormProvider } from '~/Providers';
 import { useChatHelpers, useAddedResponse, useSSE } from '~/hooks';
-import ConversationStarters from './Input/ConversationStarters';
 import { useGetMessagesByConvoId } from '~/data-provider';
 import MessagesView from './Messages/MessagesView';
 import Presentation from './Presentation';
 import ChatForm from './Input/ChatForm';
-import Landing from './Landing';
 import Header from './Header';
 import Footer from './Footer';
-import { cn } from '~/utils';
 import store from '~/store';
-import ThemeToggle from '~/components/Auth/ThemeToggle';
 
 function LoadingSpinner() {
   return (
     <div className="relative flex-1 overflow-hidden overflow-y-auto">
-      <div className="relative flex h-full items-center justify-center">
-        <Spinner className="text-text-primary" />
+      <div className="flex h-full items-center justify-center">
+        <div className="bg-transparent px-0 py-0">
+          <Spinner className="text-[var(--brand-navy)]" />
+        </div>
       </div>
     </div>
   );
@@ -34,9 +32,12 @@ function ChatView({ index = 0 }: { index?: number }) {
   const { conversationId } = useParams();
   const rootSubmission = useRecoilValue(store.submissionByIndex(index));
   const addedSubmission = useRecoilValue(store.submissionByIndex(index + 1));
-  const centerFormOnLanding = useRecoilValue(store.centerFormOnLanding);
-
   const fileMap = useFileMapContext();
+  const chatDirection = useRecoilValue(store.chatDirection);
+  const isRTL = useMemo(
+    () => (chatDirection ?? '').toString().toLowerCase() === 'rtl',
+    [chatDirection],
+  );
 
   const { data: messagesTree = null, isLoading } = useGetMessagesByConvoId(conversationId ?? '', {
     select: useCallback(
@@ -60,19 +61,12 @@ function ChatView({ index = 0 }: { index?: number }) {
   });
 
   let content: JSX.Element | null | undefined;
-  const isLandingPage =
-    (!messagesTree || messagesTree.length === 0) &&
-    (conversationId === Constants.NEW_CONVO || !conversationId);
-  const isNavigating = (!messagesTree || messagesTree.length === 0) && conversationId != null;
+  const isLandingPage = false;
 
   if (isLoading && conversationId !== Constants.NEW_CONVO) {
     content = <LoadingSpinner />;
-  } else if ((isLoading || isNavigating) && !isLandingPage) {
-    content = <LoadingSpinner />;
-  } else if (!isLandingPage) {
-    content = <MessagesView messagesTree={messagesTree} />;
   } else {
-    content = <Landing centerFormOnLanding={centerFormOnLanding} />;
+    content = <MessagesView messagesTree={messagesTree ?? []} />;
   }
 
   return (
@@ -80,36 +74,27 @@ function ChatView({ index = 0 }: { index?: number }) {
       <ChatContext.Provider value={chatHelpers}>
         <AddedChatContext.Provider value={addedChatHelpers}>
           <Presentation>
-            <div className="pointer-events-none">
-              <div className="pointer-events-auto fixed bottom-6 right-6 z-30 drop-shadow-[0_18px_55px_-24px_rgba(59,130,246,0.65)] sm:bottom-8 sm:right-8">
-                <ThemeToggle />
-              </div>
-            </div>
-            <div className="flex h-full w-full flex-col space-y-3 sm:space-y-4" dir="rtl">
-              {!isLoading && <Header />}
-              <>
-                <div
-                  className={cn(
-                    'flex flex-col',
-                    isLandingPage
-                      ? 'flex-1 items-center justify-end sm:justify-center'
-                      : 'h-full overflow-y-auto',
-                  )}
-                >
-                  {content}
-                  <div
-                    className={cn(
-                      'w-full',
-                      isLandingPage && 'max-w-3xl transition-all duration-200 xl:max-w-4xl',
-                    )}
-                  >
-                    <ChatForm index={index} />
-                    {isLandingPage ? <ConversationStarters /> : <Footer />}
-                  </div>
+            <section
+              data-testid="chat-shell"
+              dir={isRTL ? 'rtl' : 'ltr'}
+              className="flex h-full min-h-0 w-full overflow-hidden bg-transparent"
+            >
+              <div
+                data-testid="chat-main"
+                className="mx-auto flex h-full min-h-0 w-full flex-col gap-3 bg-transparent"
+              >
+                <div className="sticky top-0 z-20">
+                  <Header />
                 </div>
-                {isLandingPage && <Footer />}
-              </>
-            </div>
+                <div className="flex min-h-0 flex-1 flex-col gap-3 bg-transparent">
+                  <div data-testid="chat-messages-frame" className="min-h-0 flex-1 bg-transparent">
+                    {content}
+                  </div>
+                  <ChatForm index={index} />
+                  <Footer />
+                </div>
+              </div>
+            </section>
           </Presentation>
         </AddedChatContext.Provider>
       </ChatContext.Provider>

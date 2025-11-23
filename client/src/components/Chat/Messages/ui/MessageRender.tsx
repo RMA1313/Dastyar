@@ -13,7 +13,7 @@ import SubRow from '~/components/Chat/Messages/SubRow';
 import { fontSizeAtom } from '~/store/fontSize';
 import { MessageContext } from '~/Providers';
 import { useMessageActions } from '~/hooks';
-import { cn, logger } from '~/utils';
+import { cn, logger, detectTextDirection } from '~/utils';
 import store from '~/store';
 
 type MessageRenderProps = {
@@ -62,6 +62,11 @@ const MessageRender = memo(
     });
     const fontSize = useAtomValue(fontSizeAtom);
     const maximizeChatSpace = useRecoilValue(store.maximizeChatSpace);
+    const chatDirection = useRecoilValue(store.chatDirection);
+    const isRTLLayout = useMemo(
+      () => (chatDirection ?? '').toString().toLowerCase() === 'rtl',
+      [chatDirection],
+    );
 
     const handleRegenerateMessage = useCallback(() => regenerateMessage(), [regenerateMessage]);
     const hasNoChildren = !(msg?.children?.length ?? 0);
@@ -110,49 +115,45 @@ const MessageRender = memo(
       [showCardRender, isLatestMessage, msg, setLatestMessage],
     );
 
+    const textDirection = useMemo(() => detectTextDirection(msg?.text ?? ''), [msg?.text]);
+    const isRTLMessage = textDirection === 'rtl';
+    const textAlign = isRTLMessage ? 'right' : 'left';
+
     if (!msg) {
       return null;
     }
 
     const isUser = msg?.isCreatedByUser;
-
-    const baseClasses = {
-      common:
-        'group flex w-full max-w-[78rem] items-start gap-3 px-2 py-1.5 transition-all duration-300 transform-gpu sm:gap-4 sm:px-4',
-      card: 'relative w-full gap-2 rounded-[24px] border border-border-medium bg-surface-primary-alt p-3 md:w-1/2 md:gap-3 md:p-4',
-      chat: maximizeChatSpace
-        ? 'w-full max-w-full md:px-3 lg:px-2 xl:px-5'
-        : 'md:max-w-[52rem] xl:max-w-[60rem]',
-    };
-
-    const conditionalClasses = {
-      latestCard: isLatestCard ? 'bg-surface-secondary shadow-lg' : '',
-      cardRender: showCardRender ? 'cursor-pointer transition-colors duration-300' : '',
-      focus: 'focus:outline-none focus:ring-2 focus:ring-border-xheavy',
-    };
-
-    const bubbleClasses = isUser
-      ? 'border-white/70 bg-gradient-to-l from-sky-50/90 via-white/95 to-indigo-50/85 shadow-[0_24px_60px_-48px_rgba(59,130,246,0.85)] dark:border-white/10 dark:from-slate-800/85 dark:via-slate-900/80 dark:to-indigo-900/75 dark:shadow-black/40'
-      : 'border-white/70 bg-white/90 shadow-[0_24px_60px_-50px_rgba(99,102,241,0.8)] dark:border-white/10 dark:bg-slate-900/85 dark:shadow-black/45';
-
-    const alignmentClasses = isUser
-      ? 'flex-row-reverse justify-start text-right'
-      : 'flex-row justify-start text-right';
+    const rowAlignmentClasses = isUser
+      ? isRTLLayout
+        ? 'justify-start'
+        : 'justify-end'
+      : isRTLLayout
+        ? 'justify-end'
+        : 'justify-start';
+    const bubbleBase =
+      'flex w-full flex-col gap-3 text-sm leading-8 bg-white/70 dark:bg-gray-800/70 text-text-primary dark:text-gray-100 border border-white/30 dark:border-gray-700 shadow-sm rounded-3xl p-6 backdrop-blur-xl';
+    const bubbleWidth = isCard ? 'max-w-full' : 'w-full max-w-[780px] mx-auto';
+    const bubbleTone = '';
+    const bubbleBorder = '';
+    const cardTone = '';
+    const wrapperDirection = useMemo(() => {
+      if (isRTLLayout) {
+        return isUser ? 'flex-row' : 'flex-row-reverse';
+      }
+      return isUser ? 'flex-row-reverse' : 'flex-row';
+    }, [isRTLLayout, isUser]);
 
     return (
       <div
         id={msg.messageId}
         aria-label={`message-${msg.depth}-${msg.messageId}`}
         className={cn(
-          baseClasses.common,
-          isCard ? baseClasses.card : baseClasses.chat,
-          conditionalClasses.latestCard,
-          conditionalClasses.cardRender,
-          conditionalClasses.focus,
-          'message-render',
-          alignmentClasses,
+          'message-render group flex w-full',
+          isCard ? 'md:max-w-[48%]' : maximizeChatSpace ? 'max-w-full' : 'md:max-w-5xl',
+          rowAlignmentClasses,
         )}
-        dir="rtl"
+        dir={isRTLLayout ? 'rtl' : 'ltr'}
         onClick={clickHandler}
         onKeyDown={(e) => {
           if ((e.key === 'Enter' || e.key === ' ') && clickHandler) {
@@ -161,97 +162,95 @@ const MessageRender = memo(
         }}
         role={showCardRender ? 'button' : undefined}
         tabIndex={showCardRender ? 0 : undefined}
-        style={{ unicodeBidi: 'normal' }}
+        style={{ unicodeBidi: 'plaintext', whiteSpace: 'normal', wordBreak: 'break-word' }}
       >
-        {isLatestCard && (
-          <div className="absolute right-0 top-0 m-2 h-3 w-3 rounded-full bg-text-primary" />
-        )}
-
-        <div className="relative flex flex-shrink-0 flex-col items-center">
-          <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-[16px] border border-white/60 bg-white/90 shadow-md shadow-slate-200/60 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/85 dark:shadow-black/30">
-            <MessageIcon iconData={iconData} assistant={assistant} agent={agent} />
-          </div>
-        </div>
-
         <div
           className={cn(
-            'relative flex max-w-[78%] flex-col text-right sm:max-w-[72%] lg:max-w-[68%]',
-            isUser ? 'user-turn items-end self-end' : 'agent-turn items-start self-start',
+            'flex w-full items-start gap-2',
+            wrapperDirection,
+            isUser ? 'justify-end' : 'justify-start',
           )}
-          style={{ unicodeBidi: 'normal' }}
         >
-          <div
-            className={cn(
-              'relative flex w-fit max-w-full flex-col gap-3 rounded-[24px] border px-4 py-3 shadow-lg backdrop-blur-xl transition-all duration-300 sm:px-6 sm:py-4',
-              bubbleClasses,
-            )}
-            style={{ unicodeBidi: 'normal' }}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <h2
-                className={cn(
-                  'select-none text-sm font-semibold text-slate-800 dark:text-white',
-                  fontSize,
+          <div className={cn('flex w-full flex-col gap-2', isUser ? 'items-end' : 'items-start')}>
+            <div
+              className={cn(
+                bubbleBase,
+                bubbleWidth,
+                bubbleTone,
+                bubbleBorder,
+                cardTone,
+                isUser || isRTLMessage ? 'items-end text-right' : 'items-start text-left',
+                isCard && showCardRender && 'cursor-pointer',
+              )}
+              dir={textDirection}
+              style={{ textAlign, unicodeBidi: 'plaintext', wordBreak: 'break-word' }}
+            >
+              <div className={cn('flex w-full items-center gap-3', wrapperDirection)}>
+                {!isUser && (
+                  <div className="flex h-8 w-8 items-center justify-center bg-transparent text-text-primary">
+                    <MessageIcon iconData={iconData} assistant={assistant} agent={agent} />
+                  </div>
                 )}
-              >
-                {messageLabel}
-              </h2>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              <div className="flex max-w-full flex-grow flex-col gap-1">
-                <MessageContext.Provider
-                  value={{
-                    messageId: msg.messageId,
-                    conversationId: conversation?.conversationId,
-                    isExpanded: false,
-                    isSubmitting: effectiveIsSubmitting,
-                    isLatestMessage,
-                  }}
-                >
-                  {msg.plugin && <Plugin plugin={msg.plugin} />}
-                  <MessageContent
-                    ask={ask}
-                    edit={edit}
-                    isLast={isLast}
-                    text={msg.text || ''}
-                    message={msg}
-                    enterEdit={enterEdit}
-                    error={!!(msg.error ?? false)}
-                    isSubmitting={effectiveIsSubmitting}
-                    unfinished={msg.unfinished ?? false}
-                    isCreatedByUser={msg.isCreatedByUser ?? true}
-                    siblingIdx={siblingIdx ?? 0}
-                    setSiblingIdx={setSiblingIdx ?? (() => ({}))}
-                  />
-                </MessageContext.Provider>
+                <h2 className={cn('text-sm font-semibold text-text-primary', fontSize)}>
+                  {messageLabel}
+                </h2>
               </div>
 
-              {hasNoChildren && (isSubmittingFamily === true || effectiveIsSubmitting) ? (
-                <PlaceholderRow isCard={isCard} />
-              ) : (
-                <SubRow classes="text-xs">
-                  <SiblingSwitch
-                    siblingIdx={siblingIdx}
-                    siblingCount={siblingCount}
-                    setSiblingIdx={setSiblingIdx}
-                  />
-                  <HoverButtons
-                    index={index}
-                    isEditing={edit}
-                    message={msg}
-                    enterEdit={enterEdit}
-                    isSubmitting={isSubmitting}
-                    conversation={conversation ?? null}
-                    regenerate={handleRegenerateMessage}
-                    copyToClipboard={copyToClipboard}
-                    handleContinue={handleContinue}
-                    latestMessage={latestMessage}
-                    handleFeedback={handleFeedback}
-                    isLast={isLast}
-                  />
-                </SubRow>
-              )}
+              <div className="flex w-full flex-col gap-3">
+                <div className="flex w-full max-w-full flex-grow flex-col gap-1">
+                  <MessageContext.Provider
+                    value={{
+                      messageId: msg.messageId,
+                      conversationId: conversation?.conversationId,
+                      isExpanded: false,
+                      isSubmitting: effectiveIsSubmitting,
+                      isLatestMessage,
+                    }}
+                  >
+                    {msg.plugin && <Plugin plugin={msg.plugin} />}
+                    <MessageContent
+                      ask={ask}
+                      edit={edit}
+                      isLast={isLast}
+                      text={msg.text || ''}
+                      message={msg}
+                      enterEdit={enterEdit}
+                      error={!!(msg.error ?? false)}
+                      isSubmitting={effectiveIsSubmitting}
+                      unfinished={msg.unfinished ?? false}
+                      isCreatedByUser={msg.isCreatedByUser ?? true}
+                      siblingIdx={siblingIdx ?? 0}
+                      setSiblingIdx={setSiblingIdx ?? (() => ({}))}
+                    />
+                  </MessageContext.Provider>
+                </div>
+
+                {hasNoChildren && (isSubmittingFamily === true || effectiveIsSubmitting) ? (
+                  <PlaceholderRow isCard={isCard} />
+                ) : (
+                  <SubRow classes="text-xs w-full justify-between">
+                    <SiblingSwitch
+                      siblingIdx={siblingIdx}
+                      siblingCount={siblingCount}
+                      setSiblingIdx={setSiblingIdx}
+                    />
+                    <HoverButtons
+                      index={index}
+                      isEditing={edit}
+                      message={msg}
+                      enterEdit={enterEdit}
+                      isSubmitting={isSubmitting}
+                      conversation={conversation ?? null}
+                      regenerate={handleRegenerateMessage}
+                      copyToClipboard={copyToClipboard}
+                      handleContinue={handleContinue}
+                      latestMessage={latestMessage}
+                      handleFeedback={handleFeedback}
+                      isLast={isLast}
+                    />
+                  </SubRow>
+                )}
+              </div>
             </div>
           </div>
         </div>

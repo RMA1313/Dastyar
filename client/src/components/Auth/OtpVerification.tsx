@@ -206,8 +206,7 @@ const OtpVerification = () => {
                 onKeyDown={(e) => handleKeyDown(e, index)}
                 onPaste={handlePaste}
                 onFocus={(e) => e.target.select()}
-                className={`aspect-square w-full rounded-2xl border-2 border-slate-200 bg-white/90 text-center text-xl font-bold tracking-[0.35em] text-slate-900 shadow-sm transition-all duration-200 focus:-translate-y-[1px] focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-sky-400 dark:focus:ring-sky-500/30 ${value ? 'scale-105 ring-1 ring-sky-200/80 dark:ring-sky-400/30' : ''}`}
-                style={{ textAlign: value ? 'left' : 'right' }}
+                className={`aspect-square w-full rounded-2xl border-2 border-slate-200 bg-white/90 flex items-center justify-center text-center text-xl font-bold leading-none tracking-[0.35em] text-slate-900 shadow-sm transition-all duration-200 focus:-translate-y-[1px] focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-sky-400 dark:focus:ring-sky-500/30 ${value ? 'scale-105 ring-1 ring-sky-200/80 dark:ring-sky-400/30' : ''}`}
               />
             ))}
           </div>

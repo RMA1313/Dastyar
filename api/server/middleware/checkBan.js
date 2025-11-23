@@ -60,6 +60,11 @@ const checkBan = async (req, res, next = () => {}) => {
       userId = user?._id ? user._id.toString() : userId;
     }
 
+    if (!userId && req?.body?.phone) {
+      const user = await findUser({ phone: req.body.phone }, '_id');
+      userId = user?._id ? user._id.toString() : userId;
+    }
+
     if (!userId && !req.ip) {
       return next();
     }

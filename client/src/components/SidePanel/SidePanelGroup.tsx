@@ -107,6 +107,7 @@ const SidePanelGroup = memo(
           direction="horizontal"
           dir="ltr"
           onLayout={(sizes) => throttledSaveLayout(sizes)}
+          style={{ gap: 0 }}
           className="relative h-full w-full flex-1 overflow-hidden rounded-[30px] border border-white/30 bg-gradient-to-br from-white/45 via-white/30 to-sky-50/40 shadow-[0_24px_90px_-55px_rgba(59,130,246,0.75)] backdrop-blur-2xl transition-shadow duration-500 dark:border-white/10 dark:from-slate-950/50 dark:via-slate-950/35 dark:to-indigo-950/45 dark:shadow-black/40"
         >
           <ResizablePanel

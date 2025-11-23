@@ -120,7 +120,7 @@ const LoginForm: React.FC<TLoginFormProps> = ({ startupConfig, error, setError }
       <div>
         <label
           htmlFor="phone"
-          className="mb-3 block text-sm font-semibold text-slate-700 dark:text-slate-100"
+          className="mb-3 block text-right text-sm font-semibold text-slate-700 dark:text-slate-100"
         >
           شماره تلفن همراه
         </label>

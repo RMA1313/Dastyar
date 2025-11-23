@@ -1,4 +1,5 @@
 import { useMemo, useCallback, useState, useEffect, useRef } from 'react';
+import { useRecoilValue } from 'recoil';
 import { easings } from '@react-spring/web';
 import { EModelEndpoint } from 'librechat-data-provider';
 import { BirthdayIcon, TooltipAnchor, SplitText } from '@librechat/client';
@@ -7,9 +8,10 @@ import { useGetEndpointsQuery, useGetStartupConfig } from '~/data-provider';
 import ConvoIcon from '~/components/Endpoints/ConvoIcon';
 import { useLocalize, useAuthContext } from '~/hooks';
 import { getIconEndpoint, getEntity } from '~/utils';
+import store from '~/store';
 
 const containerClassName =
-  'shadow-stroke relative flex h-full items-center justify-center rounded-2xl border border-white/70 bg-white/90 text-black shadow-lg shadow-slate-200/60 backdrop-blur-xl transition-all duration-300 hover:-translate-y-[2px] hover:shadow-2xl hover:shadow-sky-200/60 dark:border-white/10 dark:bg-slate-900/80 dark:text-white dark:shadow-black/30';
+  'relative flex items-center justify-center rounded-xl border border-border-light bg-surface-secondary text-text-primary shadow-sm transition-colors';
 
 function getTextSizeClass(text: string | undefined | null) {
   if (!text) {
@@ -35,6 +37,8 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
   const { data: endpointsConfig } = useGetEndpointsQuery();
   const { user } = useAuthContext();
   const localize = useLocalize();
+  const chatDirection = useRecoilValue(store.chatDirection);
+  const isRTL = (chatDirection ?? '').toString().toLowerCase() === 'rtl';
 
   const [textHasMultipleLines, setTextHasMultipleLines] = useState(false);
   const [lineCount, setLineCount] = useState(1);
@@ -86,25 +90,18 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
     const dayOfWeek = now.getDay();
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
-    // Early morning (midnight to 4:59 AM)
     if (hours >= 0 && hours < 5) {
       return localize('com_ui_late_night');
-    }
-    // Morning (6 AM to 11:59 AM)
-    else if (hours < 12) {
+    } else if (hours < 12) {
       if (isWeekend) {
         return localize('com_ui_weekend_morning');
       }
       return localize('com_ui_good_morning');
-    }
-    // Afternoon (12 PM to 4:59 PM)
-    else if (hours < 17) {
+    } else if (hours < 17) {
       return localize('com_ui_good_afternoon');
     }
-    // Evening (5 PM to 8:59 PM)
-    else {
-      return localize('com_ui_good_evening');
-    }
+
+    return localize('com_ui_good_evening');
   }, [localize, startupConfig?.interface?.customWelcome, user?.name]);
 
   const handleLineCountChange = useCallback((count: number) => {
@@ -138,31 +135,23 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
     return margin;
   }, [lineCount, description, textHasMultipleLines, contentHeight]);
 
-  const greetingText =
-    typeof startupConfig?.interface?.customWelcome === 'string'
-      ? getGreeting()
-      : getGreeting() + (user?.name ? ', ' + user.name : '');
+  const greetingText = getGreeting();
 
   return (
     <div
-      className={`relative flex h-full w-full transform-gpu flex-col items-end justify-center px-4 pb-10 pt-4 transition-all duration-300 sm:px-8 ${centerFormOnLanding ? 'max-h-full sm:max-h-0' : 'max-h-full'} ${getDynamicMargin}`}
-      dir="rtl"
-      style={{ fontFamily: 'Vazir, system-ui, -apple-system, sans-serif' }}
+      className={`relative flex h-full w-full transform-gpu flex-col items-center justify-center px-4 pb-8 pt-4 transition-all duration-300 sm:px-8 ${centerFormOnLanding ? 'max-h-full sm:max-h-0' : 'max-h-full'} ${getDynamicMargin}`}
+      dir={isRTL ? 'rtl' : 'ltr'}
     >
       <div
         ref={contentRef}
-        className="relative flex w-full max-w-3xl flex-col items-center gap-3 rounded-[32px] border border-white/60 bg-white/90 px-8 py-9 text-center shadow-[0_26px_80px_-50px_rgba(59,130,246,0.85)] backdrop-blur-2xl transition-all duration-500 hover:-translate-y-[2px] hover:shadow-[0_32px_105px_-58px_rgba(99,102,241,0.85)] dark:border-white/10 dark:bg-slate-900/85 dark:shadow-black/45 sm:px-11"
+        className="relative flex w-full max-w-3xl flex-col items-center gap-4 rounded-2xl border border-border-light bg-surface-primary px-8 py-9 text-center shadow-md transition-all duration-300 sm:px-10"
       >
-        <div
-          className="pointer-events-none absolute inset-0 rounded-[32px] bg-gradient-to-l from-sky-50/80 via-white/60 to-indigo-100/70 opacity-95 dark:from-slate-800/65 dark:via-slate-900/55 dark:to-slate-800/60"
-          aria-hidden="true"
-        />
         <div className="relative flex flex-col items-center gap-0">
           <div
-            className={`flex ${textHasMultipleLines ? 'flex-col' : 'flex-col md:flex-row'} items-center justify-center gap-2`}
+            className={`flex ${textHasMultipleLines ? 'flex-col' : 'flex-col md:flex-row'} items-center justify-center gap-3`}
           >
             <div
-              className={`relative size-16 justify-center rounded-3xl border border-white/70 bg-white/90 p-2 shadow-lg shadow-slate-200/60 backdrop-blur-xl transition-all duration-300 hover:-translate-y-[1px] hover:shadow-2xl hover:shadow-sky-200/60 dark:border-white/10 dark:bg-slate-900/80 dark:shadow-black/30 ${textHasMultipleLines ? 'mb-2' : ''}`}
+              className={`relative size-16 justify-center rounded-2xl border border-border-light bg-surface-secondary p-2 shadow-sm ${textHasMultipleLines ? 'mb-2' : ''}`}
             >
               <ConvoIcon
                 agentsMap={agentsMap}
@@ -171,7 +160,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
                 endpointsConfig={endpointsConfig}
                 containerClassName={containerClassName}
                 context="landing"
-                className="h-2/3 w-2/3 text-black dark:text-white"
+                className="h-2/3 w-2/3 text-text-primary"
                 size={41}
               />
               {startupConfig?.showBirthdayIcon && (
@@ -189,7 +178,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
                 <SplitText
                   key={`split-text-${name}`}
                   text={name}
-                  className={`${getTextSizeClass(name)} font-bold text-slate-900 dark:text-white`}
+                  className={`${getTextSizeClass(name)} font-bold text-text-primary`}
                   delay={50}
                   textAlign="center"
                   animationFrom={{ opacity: 0, transform: 'translate3d(0,50px,0)' }}
@@ -204,7 +193,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
               <SplitText
                 key={`split-text-${greetingText}${user?.name ? '-user' : ''}`}
                 text={greetingText}
-                className={`${getTextSizeClass(greetingText)} font-bold text-slate-900 drop-shadow-sm dark:text-white`}
+                className={`${getTextSizeClass(greetingText)} font-bold text-text-primary drop-shadow-sm`}
                 delay={50}
                 textAlign="center"
                 animationFrom={{ opacity: 0, transform: 'translate3d(0,50px,0)' }}
@@ -217,7 +206,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
             )}
           </div>
           {description && (
-            <div className="relative mt-4 max-w-md animate-fadeIn rounded-3xl bg-white/80 px-5 py-4 text-center text-sm font-medium text-slate-700 shadow-lg shadow-slate-200/60 backdrop-blur dark:bg-slate-800/85 dark:text-slate-100 dark:shadow-black/30">
+            <div className="relative mt-4 max-w-md animate-fadeIn rounded-xl border border-border-light bg-surface-secondary px-5 py-4 text-center text-sm font-medium text-text-secondary shadow-sm">
               {description}
             </div>
           )}

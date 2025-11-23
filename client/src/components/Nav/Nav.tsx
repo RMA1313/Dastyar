@@ -193,9 +193,10 @@ const Nav = memo(
         <div
           data-testid="nav"
           className={cn(
-            'nav active max-w-[320px] flex-shrink-0 transform overflow-x-hidden border-l border-white/20 bg-surface-primary-alt shadow-[0_18px_70px_-42px_rgba(59,130,246,0.6)] transition-all duration-200 ease-in-out dark:border-white/10 dark:shadow-black/40',
+            'nav active max-w-[320px] flex-shrink-0 transform overflow-x-hidden border-l border-white/20 bg-surface-primary-alt text-right shadow-[0_18px_70px_-42px_rgba(59,130,246,0.6)] transition-all duration-200 ease-in-out dark:border-white/10 dark:shadow-black/40',
             'md:max-w-[260px]',
           )}
+          dir="rtl"
           style={{
             width: navVisible ? navWidth : '0px',
             transform: navVisible ? 'translateX(0)' : 'translateX(100%)',
@@ -210,7 +211,7 @@ const Nav = memo(
                   <nav
                     id="chat-history-nav"
                     aria-label={localize('com_ui_chat_history')}
-                    className="flex h-full flex-col px-2 pb-3.5 md:px-3"
+                    className="flex h-full flex-col px-3 pb-3.5 text-right md:px-4"
                   >
                     <div className="flex flex-1 flex-col" ref={outerContainerRef}>
                       <MemoNewChat
