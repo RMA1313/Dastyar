@@ -1,0 +1,16 @@
+{{- if .Values.dastyar.imageVolume.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "dastyar.fullname" $ }}-images
+spec:
+  accessModes:
+    - {{ .Values.dastyar.imageVolume.accessModes }}
+{{- if .Values.dastyar.imageVolume.storageClassName }}
+  storageClassName: {{ .Values.dastyar.imageVolume.storageClassName }}
+{{- end }}          
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: {{ .Values.dastyar.imageVolume.size }}
+{{- end }}

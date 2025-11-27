@@ -76,28 +76,48 @@ export default function Presentation({ children }: { children: React.ReactNode }
   }, [artifactsVisibility, artifacts]);
 
   return (
-    <DragDropWrapper
-      dir={(chatDirection ?? '').toString().toLowerCase() === 'rtl' ? 'rtl' : 'ltr'}
-      className="relative flex h-full w-full items-stretch justify-end overflow-hidden bg-gradient-to-br from-[#eef4ff] via-[#f6f9ff] to-[#eef6ff] text-text-primary transition-colors dark:bg-gradient-to-br dark:from-[#0b1324] dark:via-[#0f172a] dark:to-[#0b1120] dark:text-gray-100"
-    >
-      <SidePanelProvider>
-        <div className="relative z-10 flex h-full w-full justify-end">
-          <SidePanelGroup
-            defaultLayout={defaultLayout}
-            fullPanelCollapse={fullCollapse}
-            defaultCollapsed={defaultCollapsed}
-            artifacts={artifactsElement}
-          >
-            <main
-              dir={(chatDirection ?? '').toString().toLowerCase() === 'rtl' ? 'rtl' : 'ltr'}
-              className="flex h-full w-full flex-col overflow-hidden bg-transparent text-text-primary"
-              role="main"
+    <>
+      <style>
+        {`
+        .premium-chat-theme {
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          transition: background 250ms ease, color 250ms ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translate3d(0,16px,0); } to { opacity: 1; transform: translate3d(0,0,0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+        @keyframes messageAppear { from { opacity: 0; transform: translateY(6px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .animate-fadeIn { animation: fadeIn 0.35s ease both; }
+        .animate-fadeInUp { animation: fadeInUp 0.35s ease both; }
+        .animate-slideUp { animation: slideUp 0.45s ease both; }
+        .animate-scaleIn { animation: scaleIn 0.35s ease both; }
+        `}
+      </style>
+      <DragDropWrapper
+        dir={(chatDirection ?? '').toString().toLowerCase() === 'rtl' ? 'rtl' : 'ltr'}
+        className="premium-chat-theme relative flex h-full w-full items-stretch justify-end overflow-hidden bg-[linear-gradient(180deg,#F8FAFF_0%,#EFF2F7_100%)] text-[#2C2F36] transition-colors dark:bg-gradient-to-br dark:from-[#0d1221] dark:via-[#0e1424] dark:to-[#101729] dark:text-gray-100"
+      >
+        <SidePanelProvider>
+          <div className="relative z-10 flex h-full w-full justify-end px-0 pb-0 pt-0">
+            <SidePanelGroup
+              defaultLayout={defaultLayout}
+              fullPanelCollapse={fullCollapse}
+              defaultCollapsed={defaultCollapsed}
+              artifacts={artifactsElement}
             >
-              {children}
-            </main>
-          </SidePanelGroup>
-        </div>
-      </SidePanelProvider>
-    </DragDropWrapper>
+              <main
+                dir={(chatDirection ?? '').toString().toLowerCase() === 'rtl' ? 'rtl' : 'ltr'}
+                className="flex h-full w-full flex-col overflow-hidden text-text-primary transition-all duration-300"
+                role="main"
+              >
+                {children}
+              </main>
+            </SidePanelGroup>
+          </div>
+        </SidePanelProvider>
+      </DragDropWrapper>
+    </>
   );
 }

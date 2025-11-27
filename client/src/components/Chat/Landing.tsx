@@ -11,7 +11,7 @@ import { getIconEndpoint, getEntity } from '~/utils';
 import store from '~/store';
 
 const containerClassName =
-  'relative flex items-center justify-center rounded-xl border border-border-light bg-surface-secondary text-text-primary shadow-sm transition-colors';
+  'relative flex items-center justify-center rounded-3xl border border-white/15 bg-white/20 text-text-primary shadow-[0_18px_45px_rgba(0,0,0,0.2)] backdrop-blur-[28px] transition-colors dark:border-white/10 dark:bg-[#0f172a]/60';
 
 function getTextSizeClass(text: string | undefined | null) {
   if (!text) {
@@ -139,19 +139,20 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
 
   return (
     <div
-      className={`relative flex h-full w-full transform-gpu flex-col items-center justify-center px-4 pb-8 pt-4 transition-all duration-300 sm:px-8 ${centerFormOnLanding ? 'max-h-full sm:max-h-0' : 'max-h-full'} ${getDynamicMargin}`}
+      className={`relative flex h-full w-full transform-gpu flex-col items-center justify-center px-4 pb-10 pt-6 transition-all duration-300 sm:px-10 ${centerFormOnLanding ? 'max-h-full sm:max-h-0' : 'max-h-full'} ${getDynamicMargin}`}
       dir={isRTL ? 'rtl' : 'ltr'}
     >
+      <div className="pointer-events-none absolute inset-0 -z-0 bg-[radial-gradient(circle_at_20%_20%,rgba(0,102,255,0.18),transparent_36%),radial-gradient(circle_at_80%_15%,rgba(55,191,255,0.22),transparent_38%),radial-gradient(circle_at_50%_80%,rgba(20,26,42,0.18),transparent_42%)]" />
       <div
         ref={contentRef}
-        className="relative flex w-full max-w-3xl flex-col items-center gap-4 rounded-2xl border border-border-light bg-surface-primary px-8 py-9 text-center shadow-md transition-all duration-300 sm:px-10"
+        className="relative flex w-full max-w-4xl flex-col items-center gap-4 rounded-[30px] border border-white/15 bg-white/16 px-10 py-10 text-center shadow-[0_26px_65px_rgba(0,0,0,0.22)] backdrop-blur-[40px] transition-all duration-500 hover:shadow-[0_30px_80px_rgba(0,0,0,0.26)] dark:border-white/10 dark:bg-[#0f172a]/65"
       >
         <div className="relative flex flex-col items-center gap-0">
           <div
-            className={`flex ${textHasMultipleLines ? 'flex-col' : 'flex-col md:flex-row'} items-center justify-center gap-3`}
+            className={`flex ${textHasMultipleLines ? 'flex-col' : 'flex-col md:flex-row'} items-center justify-center gap-4 animate-fadeInUp`}
           >
             <div
-              className={`relative size-16 justify-center rounded-2xl border border-border-light bg-surface-secondary p-2 shadow-sm ${textHasMultipleLines ? 'mb-2' : ''}`}
+              className={`relative size-20 justify-center rounded-[22px] border border-white/15 bg-white/25 p-3 shadow-[0_18px_40px_rgba(0,0,0,0.18)] backdrop-blur-[26px] ${textHasMultipleLines ? 'mb-2' : ''} dark:border-white/10 dark:bg-[#0f172a]/70`}
             >
               <ConvoIcon
                 agentsMap={agentsMap}
@@ -174,11 +175,11 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
               )}
             </div>
             {((isAgent || isAssistant) && name) || name ? (
-              <div className="flex flex-col items-center gap-0 p-2">
+              <div className="flex flex-col items-center gap-1 p-2">
                 <SplitText
                   key={`split-text-${name}`}
                   text={name}
-                  className={`${getTextSizeClass(name)} font-bold text-text-primary`}
+                  className={`${getTextSizeClass(name)} font-semibold leading-tight text-[#0b1020] drop-shadow-sm dark:text-white`}
                   delay={50}
                   textAlign="center"
                   animationFrom={{ opacity: 0, transform: 'translate3d(0,50px,0)' }}
@@ -206,7 +207,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
             )}
           </div>
           {description && (
-            <div className="relative mt-4 max-w-md animate-fadeIn rounded-xl border border-border-light bg-surface-secondary px-5 py-4 text-center text-sm font-medium text-text-secondary shadow-sm">
+            <div className="relative mt-4 max-w-2xl animate-fadeIn rounded-[18px] border border-white/15 bg-white/18 px-6 py-5 text-center text-base font-medium leading-8 text-text-secondary shadow-[0_16px_40px_rgba(0,0,0,0.16)] backdrop-blur-[22px] dark:border-white/10 dark:bg-[#0f172a]/65 dark:text-gray-200">
               {description}
             </div>
           )}

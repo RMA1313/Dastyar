@@ -48,11 +48,17 @@ export default function Message(props: TMessageProps) {
 
   const { children, messageId = null } = message;
   const isUser = message?.isCreatedByUser === true;
-  const getAlignClass = useCallback(
-    (fromUser?: boolean) =>
-      fromUser ? (isRTL ? 'justify-start' : 'justify-end') : isRTL ? 'justify-end' : 'justify-start',
-    [isRTL],
-  );
+    const getAlignClass = useCallback(
+      (fromUser?: boolean) =>
+        fromUser
+          ? isRTL
+            ? 'justify-start'
+            : 'justify-end'
+          : isRTL
+            ? 'justify-end'
+            : 'justify-start',
+      [isRTL],
+    );
   const primaryAlign = getAlignClass(isUser);
 
   return (
@@ -62,7 +68,7 @@ export default function Message(props: TMessageProps) {
           <div className="flex w-full flex-col gap-2">
             <div
               className={cn(
-                'flex w-full flex-wrap justify-between gap-2 md:flex-nowrap md:gap-2',
+                'flex w-full flex-wrap justify-between gap-3 md:flex-nowrap md:gap-3',
                 maximizeChatSpace ? 'w-full max-w-full' : 'max-w-full',
               )}
             >
@@ -91,7 +97,7 @@ export default function Message(props: TMessageProps) {
             </div>
           </div>
         ) : (
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-3">
             <div className={cn('flex w-full', primaryAlign)}>
               <MessageRender {...props} />
             </div>

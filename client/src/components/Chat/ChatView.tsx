@@ -81,7 +81,7 @@ function ChatView({ index = 0 }: { index?: number }) {
             >
               <div
                 data-testid="chat-main"
-                className="mx-auto flex h-full min-h-0 w-full flex-col gap-3 bg-transparent"
+                className="mx-auto flex h-full min-h-0 w-full flex-col gap-3 bg-transparent px-0 pb-0 pt-0 sm:px-0 sm:pb-0 sm:pt-0"
               >
                 <div className="sticky top-0 z-20">
                   <Header />

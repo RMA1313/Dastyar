@@ -124,19 +124,13 @@ const MessageRender = memo(
     }
 
     const isUser = msg?.isCreatedByUser;
-    const rowAlignmentClasses = isUser
-      ? isRTLLayout
-        ? 'justify-start'
-        : 'justify-end'
-      : isRTLLayout
-        ? 'justify-end'
-        : 'justify-start';
+    const rowAlignmentClasses = 'justify-end';
     const bubbleBase =
-      'flex w-full flex-col gap-3 text-sm leading-8 bg-white/70 dark:bg-gray-800/70 text-text-primary dark:text-gray-100 border border-white/30 dark:border-gray-700 shadow-sm rounded-3xl p-6 backdrop-blur-xl';
-    const bubbleWidth = isCard ? 'max-w-full' : 'w-full max-w-[780px] mx-auto';
-    const bubbleTone = '';
-    const bubbleBorder = '';
-    const cardTone = '';
+      'flex w-full flex-col gap-2 text-[15px] leading-[1.35] rounded-[12px] px-3 py-[5px] my-[6px] shadow-none transition-all duration-200 animate-[messageAppear_0.22s_ease-out_both]';
+    const assistantTone =
+      'max-w-[70%] bg-[rgba(255,255,255,0.60)] text-[#2C2F36] border border-[rgba(210,210,210,0.5)] backdrop-blur-[20px] shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all';
+    const userTone =
+      'max-w-[52%] bg-[linear-gradient(135deg,#2196F3,#42A5F5)] text-[rgba(255,255,255,0.90)] shadow-[0_4px_14px_rgba(0,0,0,0.20)]';
     const wrapperDirection = useMemo(() => {
       if (isRTLLayout) {
         return isUser ? 'flex-row' : 'flex-row-reverse';
@@ -148,11 +142,7 @@ const MessageRender = memo(
       <div
         id={msg.messageId}
         aria-label={`message-${msg.depth}-${msg.messageId}`}
-        className={cn(
-          'message-render group flex w-full',
-          isCard ? 'md:max-w-[48%]' : maximizeChatSpace ? 'max-w-full' : 'md:max-w-5xl',
-          rowAlignmentClasses,
-        )}
+        className={cn('message-render group mx-auto flex w-full items-start', rowAlignmentClasses)}
         dir={isRTLLayout ? 'rtl' : 'ltr'}
         onClick={clickHandler}
         onKeyDown={(e) => {
@@ -166,37 +156,50 @@ const MessageRender = memo(
       >
         <div
           className={cn(
-            'flex w-full items-start gap-2',
+            'flex w-full items-start gap-3',
             wrapperDirection,
             isUser ? 'justify-end' : 'justify-start',
           )}
         >
-          <div className={cn('flex w-full flex-col gap-2', isUser ? 'items-end' : 'items-start')}>
+          <div className="flex w-full flex-col items-end gap-2">
             <div
               className={cn(
                 bubbleBase,
-                bubbleWidth,
-                bubbleTone,
-                bubbleBorder,
-                cardTone,
-                isUser || isRTLMessage ? 'items-end text-right' : 'items-start text-left',
+                isUser ? userTone : assistantTone,
+                'items-end text-right',
                 isCard && showCardRender && 'cursor-pointer',
+                'transition-all duration-200 ease-in-out',
+                'dark:bg-[rgba(255,255,255,0.06)] dark:border-[rgba(255,255,255,0.06)] dark:text-[#E2E6EE] dark:backdrop-blur-[18px] dark:shadow-[0_4px_16px_rgba(0,0,0,0.30)]',
               )}
               dir={textDirection}
-              style={{ textAlign, unicodeBidi: 'plaintext', wordBreak: 'break-word' }}
+              style={{
+                textAlign: 'justify',
+                textJustify: 'inter-word',
+                unicodeBidi: 'plaintext',
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
+                flexShrink: 0,
+              }}
             >
               <div className={cn('flex w-full items-center gap-3', wrapperDirection)}>
                 {!isUser && (
-                  <div className="flex h-8 w-8 items-center justify-center bg-transparent text-text-primary">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/30 text-text-primary shadow-[0_8px_20px_rgba(0,0,0,0.12)] backdrop-blur-md">
                     <MessageIcon iconData={iconData} assistant={assistant} agent={agent} />
                   </div>
                 )}
-                <h2 className={cn('text-sm font-semibold text-text-primary', fontSize)}>
+                <h2
+                  className={cn(
+                    'text-sm font-semibold uppercase tracking-wide text-text-primary dark:text-white/90',
+                    fontSize,
+                    !isUser && 'text-[15px]',
+                    isUser && 'text-white/90',
+                  )}
+                >
                   {messageLabel}
                 </h2>
               </div>
 
-              <div className="flex w-full flex-col gap-3">
+              <div className="flex w-full flex-col gap-4">
                 <div className="flex w-full max-w-full flex-grow flex-col gap-1">
                   <MessageContext.Provider
                     value={{

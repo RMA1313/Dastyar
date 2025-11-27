@@ -197,10 +197,10 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
   const baseClasses = useMemo(
     () =>
       cn(
-        'm-0 w-full resize-none bg-transparent py-[13px] text-text-primary dark:text-gray-100 placeholder:text-text-secondary dark:placeholder:text-gray-400 focus:outline-none',
-      isRTL ? 'text-right' : 'text-left',
-      isCollapsed ? 'max-h-[52px]' : 'max-h-[45vh] md:max-h-[55vh]',
-      isMoreThanThreeRows ? 'pl-5' : 'px-5',
+        'm-0 w-full resize-none bg-transparent py-[13px] text-[17px] leading-[1.8] font-medium text-text-primary dark:text-gray-100 placeholder:text-text-secondary dark:placeholder:text-gray-400 focus:outline-none',
+        isRTL ? 'text-right' : 'text-left',
+        isCollapsed ? 'max-h-[52px]' : 'max-h-[45vh] md:max-h-[55vh]',
+        isMoreThanThreeRows ? 'pl-5' : 'px-5',
       ),
     [isCollapsed, isMoreThanThreeRows, isRTL],
   );
@@ -210,7 +210,7 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
       data-testid="chat-input-form"
       onSubmit={methods.handleSubmit(submitMessage)}
       className={cn(
-        'relative z-30 mx-auto flex w-full max-w-full items-end justify-center px-2 pb-4 transition-[max-width] duration-300 sm:px-4',
+        'relative z-30 mx-auto flex w-full max-w-full items-end justify-center px-3 pb-5 transition-[max-width] duration-300 sm:px-6',
         maximizeChatSpace ? 'max-w-full' : 'max-w-full',
         centerFormOnLanding &&
         (conversationId == null || conversationId === Constants.NEW_CONVO) &&
@@ -246,9 +246,9 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
           <div
             onClick={handleContainerClick}
             className={cn(
-              'relative flex w-full flex-grow flex-col gap-3 overflow-hidden px-5 py-4 text-text-primary dark:text-slate-100 transition-colors duration-200 glass-input dark:bg-slate-900/80 dark:border dark:border-slate-700/60',
-              isTextAreaFocused && 'ring-2 ring-ring',
-              isTemporary && 'ring-2 ring-primary/70',
+              'relative flex w-full flex-grow flex-col gap-4 overflow-hidden rounded-[20px] border border-[#E0E4F0] bg-white px-[18px] py-[12px] text-[#2C2F36] shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-colors duration-300 dark:border-[rgba(255,255,255,0.08)] dark:bg-[#070C1A] dark:text-slate-100 dark:shadow-[0_4px_24px_rgba(0,0,0,0.45)]',
+              isTextAreaFocused && 'ring-1 ring-[#42A5F5]/60',
+              isTemporary && 'ring-1 ring-primary/60',
             )}
           >
             <TextareaHeader addedConvo={addedConvo} setAddedConvo={setAddedConvo} />

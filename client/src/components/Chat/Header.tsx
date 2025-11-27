@@ -52,37 +52,22 @@ export default function Header() {
         isRTL ? 'text-right' : 'text-left',
       )}
     >
-      <div
-        data-testid="theme-toggle-anchor"
-        className={cn(
-          'pointer-events-auto flex items-center',
-          isRTL ? 'justify-start' : 'ml-auto justify-end',
-        )}
-      >
-        <ThemeToggle />
-      </div>
-      <div
-        className={cn(
-          'hide-scrollbar flex w-full flex-wrap items-center gap-2 overflow-x-auto',
-          isRTL
-            ? 'flex-row-reverse justify-start pr-16 sm:pr-20'
-            : 'flex-row justify-between pr-16 sm:pr-20',
-        )}
-      >
-        <div className={cn('flex items-center gap-3', isRTL ? 'flex-row-reverse' : 'flex-row')}>
-          <div className="flex items-center gap-2 bg-transparent">
-          </div>
-          <OpenSidebar setNavVisible={setNavVisible} className="" />
+      <div className="hide-scrollbar flex w-full flex-wrap items-center justify-between gap-3 overflow-x-auto rounded-2xl border border-black/10 bg-white/60 px-4 py-1.5 shadow-[0_8px_18px_rgba(0,0,0,0.06)] backdrop-blur-xl transition-all duration-200 dark:border-white/10 dark:bg-white/5 dark:shadow-[0_10px_26px_rgba(0,0,0,0.35)]">
+        <div className={cn('flex items-center gap-2.5', isRTL ? 'flex-row-reverse' : 'flex-row')}>
+          <OpenSidebar setNavVisible={setNavVisible} className="h-10 w-10" />
           <HeaderNewChat />
           {hasAccessToMultiConvo === true && <AddMultiConvo />}
         </div>
         <div
           className={cn(
-            'flex flex-1 flex-wrap items-center justify-end gap-2 sm:justify-end',
-            isRTL && 'justify-start',
+            'flex flex-1 flex-wrap items-center justify-end gap-2.5 sm:justify-end',
+            isRTL && 'justify-start flex-row-reverse',
           )}
         >
-          <ModelSelector startupConfig={startupConfig} />
+          <ModelSelector
+            startupConfig={startupConfig}
+            className="min-h-10 rounded-xl border border-black/10 bg-white/80 px-3 py-2 text-sm shadow-[0_6px_16px_rgba(0,0,0,0.06)] dark:border-white/10 dark:bg-white/10 dark:text-gray-100 dark:shadow-[0_8px_18px_rgba(0,0,0,0.35)]"
+          />
           {interfaceConfig.presets === true && interfaceConfig.modelSelect && <PresetsMenu />}
           {hasAccessToBookmarks === true && <BookmarkMenu />}
           {isSmallScreen && (
@@ -94,15 +79,19 @@ export default function Header() {
             </>
           )}
         </div>
-        {!isSmallScreen && (
-          <div className={cn('flex items-center gap-2', isRTL ? 'flex-row-reverse' : 'flex-row')}>
-            <ExportAndShareMenu
-              isSharedButtonEnabled={startupConfig?.sharedLinksEnabled ?? false}
-            />
-            <TemporaryChat />
-          </div>
-        )}
+        <div className={cn('flex items-center gap-2.5', isRTL ? 'flex-row-reverse' : 'flex-row')}>
+          <ThemeToggle className="h-10 w-10 rounded-lg border border-transparent bg-transparent p-2 text-inherit transition-colors duration-150 hover:bg-black/5 dark:hover:bg-white/10" />
+          {!isSmallScreen && (
+            <>
+              <ExportAndShareMenu
+                isSharedButtonEnabled={startupConfig?.sharedLinksEnabled ?? false}
+              />
+              <TemporaryChat />
+            </>
+          )}
+        </div>
       </div>
+      <div className="h-px w-full bg-black/5 dark:bg-white/10" />
     </div>
   );
 }

@@ -39,18 +39,24 @@ function MessagesViewContent({
     <>
       <div
         data-testid="messages-view"
-        className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden"
+        className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden animate-themeTransition"
         dir={isRTL ? 'rtl' : 'ltr'}
       >
         <div className="relative flex h-full min-h-0 flex-col">
           <div
             data-testid="messages-scroll-area"
-            className="flex-1 overflow-y-auto bg-transparent dark:bg-slate-900/70 dark:text-slate-100 px-0 py-0 scrollbar-thin [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-text-secondary/40 [&::-webkit-scrollbar-thumb:hover]:bg-text-secondary/60"
+            className="flex flex-1 flex-col overflow-y-auto px-5 pb-[110px] pt-4 text-[16px] leading-7 text-[#2C2F36] transition-all duration-300 scrollbar-thin dark:text-slate-100 [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-black/15 [&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb]:bg-white/20 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/35"
             onScroll={debouncedHandleScroll}
             ref={scrollableRef}
             style={{ width: '100%', scrollbarWidth: 'thin' }}
           >
-            <div className="flex min-h-0 flex-col items-stretch gap-3 pb-0">
+            <div
+              className={cn(
+                'chat-column flex min-h-0 w-full max-w-[880px] flex-col items-stretch gap-[6px] items-start mx-auto px-4',
+                isRTL ? 'text-right' : 'text-left',
+              )}
+              dir="rtl"
+            >
               {(_messagesTree && _messagesTree.length == 0) || _messagesTree === null ? (
                 <div
                   className={cn(

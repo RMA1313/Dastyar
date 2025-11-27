@@ -1,0 +1,10 @@
+{{- if .Values.dastyar.configYamlContent }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "dastyar.fullname" $ }}-config
+data:
+  dastyar.yaml: |
+{{ .Values.dastyar.configYamlContent | toYaml | indent 4 }}
+
+{{- end }}
