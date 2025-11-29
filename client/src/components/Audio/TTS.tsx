@@ -95,6 +95,7 @@ export function BrowserTTS({
         }}
         id={`audio-${messageId}`}
         autoPlay
+        muted
       />
     </>
   );
@@ -193,6 +194,7 @@ export function ExternalTTS({
         }}
         id={`audio-${messageId}`}
         autoPlay
+        muted
       />
     </>
   );

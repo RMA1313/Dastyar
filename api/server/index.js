@@ -37,6 +37,9 @@ const port = isNaN(Number(PORT)) ? 3080 : Number(PORT);
 const host = HOST || 'localhost';
 const trusted_proxy = Number(TRUST_PROXY) || 1; /* trust first proxy by default */
 
+const mediaAssetPattern = /\.(mp3|mp4|mpeg|wav|webm|ogg|png|jpg|jpeg|gif|svg|webp)$/i;
+const permissionsPolicyHeader = 'autoplay=*';
+
 const app = express();
 
 const startServer = async () => {
@@ -82,7 +85,18 @@ const startServer = async () => {
   app.use(express.json({ limit: '3mb' }));
   app.use(express.urlencoded({ extended: true, limit: '3mb' }));
   app.use(mongoSanitize());
-  app.use(cors());
+  app.use(
+    cors({
+      allowedHeaders: ['Authorization', 'Content-Type', 'X-Requested-With'],
+      origin: true,
+    }),
+  );
+
+  app.use((req, res, next) => {
+    res.removeHeader('Feature-Policy');
+    res.setHeader('Permissions-Policy', permissionsPolicyHeader);
+    next();
+  });
   app.use(cookieParser());
 
   if (!isEnabled(DISABLE_COMPRESSION)) {
@@ -150,6 +164,12 @@ const startServer = async () => {
   app.use(ErrorController);
 
   app.use((req, res) => {
+    if (mediaAssetPattern.test(req.path)) {
+      res.status(404).type('application/json');
+      res.json({ error: 'Media resource not found' });
+      return;
+    }
+
     res.set({
       'Cache-Control': process.env.INDEX_CACHE_CONTROL || 'no-cache, no-store, must-revalidate',
       Pragma: process.env.INDEX_PRAGMA || 'no-cache',

@@ -3,6 +3,19 @@ import { LocalStorageKeys } from 'librechat-data-provider';
 const STORAGE_VERSION_KEY = 'app:storage-version';
 export const STORAGE_VERSION = '2';
 const MAX_ENTRY_LENGTH = 120_000;
+const COLOR_THEME_KEY = 'color-theme';
+const ALLOWED_COLOR_THEME_VALUES = new Set(['dark', 'light', 'system']);
+
+const sanitizeColorThemeValue = (value?: string | null) => {
+  if (!value) {
+    return 'light';
+  }
+  const normalized = value.toLowerCase();
+  if (ALLOWED_COLOR_THEME_VALUES.has(normalized)) {
+    return normalized;
+  }
+  return 'light';
+};
 
 const isQuotaError = (error: unknown) =>
   error instanceof DOMException &&
@@ -25,13 +38,18 @@ export const safeStorage = {
     }
   },
   setItem(key: string, value: string) {
-    if (value?.length > MAX_ENTRY_LENGTH) {
+    let normalizedValue = value;
+    if (key === COLOR_THEME_KEY) {
+      normalizedValue = sanitizeColorThemeValue(value);
+    }
+
+    if (normalizedValue?.length > MAX_ENTRY_LENGTH) {
       console.warn(`[storage] value too large for ${key}, skipping write`);
       return false;
     }
 
     try {
-      localStorage.setItem(key, value);
+      localStorage.setItem(key, normalizedValue);
       return true;
     } catch (error) {
       if (isQuotaError(error)) {

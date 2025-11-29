@@ -228,6 +228,7 @@ export default function StreamAudio({ index = 0 }) {
       src={globalAudioURL ?? undefined}
       id={globalAudioId}
       autoPlay
+      muted
     />
   );
 }

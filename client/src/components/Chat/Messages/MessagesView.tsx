@@ -3,6 +3,7 @@ import { useAtomValue } from 'jotai';
 import { useRecoilValue } from 'recoil';
 import { CSSTransition } from 'react-transition-group';
 import type { TMessage } from 'librechat-data-provider';
+import { Spinner } from '@librechat/client';
 import { useScreenshot, useMessageScrolling, useLocalize } from '~/hooks';
 import ScrollToBottom from '~/components/Messages/ScrollToBottom';
 import { MessagesViewProvider } from '~/Providers';
@@ -13,8 +14,12 @@ import store from '~/store';
 
 function MessagesViewContent({
   messagesTree: _messagesTree,
+  threadId,
+  isLoading,
 }: {
   messagesTree?: TMessage[] | null;
+  threadId?: string | null;
+  isLoading?: boolean;
 }) {
   const localize = useLocalize();
   const fontSize = useAtomValue(fontSizeAtom);
@@ -34,6 +39,19 @@ function MessagesViewContent({
   const { conversationId } = conversation ?? {};
   const chatDirection = useRecoilValue(store.chatDirection);
   const isRTL = (chatDirection ?? '').toString().toLowerCase() === 'rtl';
+
+  const activeThreadId = threadId ?? conversationId;
+  const hasActiveThread = Boolean(activeThreadId);
+  const awaitingMessages =
+    hasActiveThread && (isLoading === true || _messagesTree === undefined);
+  const emptyThread =
+    hasActiveThread &&
+    !awaitingMessages &&
+    (_messagesTree === null || (_messagesTree?.length ?? 0) === 0);
+
+  if (!hasActiveThread) {
+    return null;
+  }
 
   return (
     <>
@@ -57,7 +75,16 @@ function MessagesViewContent({
               )}
               dir="rtl"
             >
-              {(_messagesTree && _messagesTree.length == 0) || _messagesTree === null ? (
+              {awaitingMessages ? (
+                <div
+                  className={cn(
+                    'flex w-full justify-center bg-transparent border-0 shadow-none px-0 py-0 text-center text-text-secondary',
+                    fontSize,
+                  )}
+                >
+                  <Spinner className="text-[var(--brand-navy)]" />
+                </div>
+              ) : emptyThread ? (
                 <div
                   className={cn(
                     'flex w-full justify-center bg-transparent border-0 shadow-none px-0 py-0 text-center text-text-secondary',
@@ -105,10 +132,22 @@ function MessagesViewContent({
   );
 }
 
-export default function MessagesView({ messagesTree }: { messagesTree?: TMessage[] | null }) {
+export default function MessagesView({
+  messagesTree,
+  threadId,
+  isLoading,
+}: {
+  messagesTree?: TMessage[] | null;
+  threadId?: string | null;
+  isLoading?: boolean;
+}) {
   return (
     <MessagesViewProvider>
-      <MessagesViewContent messagesTree={messagesTree} />
+      <MessagesViewContent
+        messagesTree={messagesTree}
+        threadId={threadId}
+        isLoading={isLoading}
+      />
     </MessagesViewProvider>
   );
 }

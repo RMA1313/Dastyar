@@ -39,19 +39,23 @@ function ChatView({ index = 0 }: { index?: number }) {
     [chatDirection],
   );
 
-  const { data: messagesTree = null, isLoading } = useGetMessagesByConvoId(conversationId ?? '', {
-    select: useCallback(
-      (data: TMessage[]) => {
-        const dataTree = buildTree({ messages: data, fileMap });
-        return dataTree?.length === 0 ? null : (dataTree ?? null);
-      },
-      [fileMap],
-    ),
-    enabled: !!fileMap,
-  });
+  const { data: messagesTree, isLoading } = useGetMessagesByConvoId<TMessage[] | null>(
+    conversationId ?? '',
+    {
+      select: useCallback(
+        (data: TMessage[]) => {
+          const dataTree = buildTree({ messages: data, fileMap });
+          return dataTree?.length === 0 ? null : (dataTree ?? null);
+        },
+        [fileMap],
+      ),
+      enabled: !!fileMap,
+    },
+  );
 
   const chatHelpers = useChatHelpers(index, conversationId);
   const addedChatHelpers = useAddedResponse({ rootIndex: index });
+  const threadId = chatHelpers.conversation?.conversationId ?? conversationId ?? null;
 
   useSSE(rootSubmission, chatHelpers, false);
   useSSE(addedSubmission, addedChatHelpers, true);
@@ -66,7 +70,13 @@ function ChatView({ index = 0 }: { index?: number }) {
   if (isLoading && conversationId !== Constants.NEW_CONVO) {
     content = <LoadingSpinner />;
   } else {
-    content = <MessagesView messagesTree={messagesTree ?? []} />;
+    content = (
+      <MessagesView
+        messagesTree={messagesTree}
+        threadId={threadId}
+        isLoading={isLoading}
+      />
+    );
   }
 
   return (
